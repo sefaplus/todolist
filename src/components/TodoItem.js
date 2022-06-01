@@ -1,24 +1,28 @@
-export default function TodoItem({value, filter, onTodoChange, onTodoDelete}) {
-  const {task, status, id} = value;
-
+export default function TodoItem({
+  id,
+  value,
+  filter,
+  onTodoChange,
+  onTodoDelete,
+}) {
+  const { task, status } = value;
   function handleTaskStatus(e) {
-    onTodoChange({status: e.target.checked});
+    onTodoChange({ status: e.target.checked });
+  }
+  function handleTodoChange(e) {
+    onTodoChange({ task: e.target.value });
+  }
+  function handleTodoDelete(e) {
+    onTodoDelete({ id: e.target.value });
   }
 
-  function handleTodoChange(e) {
-    onTodoChange({task: e.target.value});
-    }
-  function handleTodoDelete(e) {
-    onTodoDelete({id: e.target.value});
-  }
-  
-  if(filter == 1 && status == 1) {
+  if (filter == 1 && status == 1) {
     return <></>;
-  } else if(filter == 2 && status == 0) {
+  } else if (filter == 2 && status == 0) {
     return <></>;
   }
   return (
-    <li key={id}>
+    <li key={id} >
       <div className="round">
         <input
           type="checkbox"
@@ -36,7 +40,9 @@ export default function TodoItem({value, filter, onTodoChange, onTodoDelete}) {
         className="todolist-task"
         value={task}
       />
-      <button className='button-rounded' value={id} onClick={handleTodoDelete}>X</button>
+      <button className="button-rounded" value={id} onClick={handleTodoDelete}>
+        X
+      </button>
     </li>
   );
 }
