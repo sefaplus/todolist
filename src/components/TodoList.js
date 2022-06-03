@@ -16,6 +16,7 @@ export default function TaskList({
       filter={filter}
       onTodoChange={onTodoChange(todoDataId)}
       onTodoDelete={onTodoDelete(todoDataId)}
+      key={todoDataId}
     />
   ));
 }
