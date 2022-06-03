@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
 import TaskList from "./TodoList";
 import TodoNameInput from "./TodoNameInput";
+import React from 'react'; 
 
 export default function TodoListApp() {
-  const parsedTodos = JSON.parse(localStorage.getItem("todos"));
+  const parsedTodos = JSON.parse(localStorage.getItem("todos")!);
   let [localTasks, setLocalTasks] = useState(
     parsedTodos == undefined ? {} : parsedTodos
   );
   let [filter, setFilter] = useState(0);
-  const todos = JSON.parse(localStorage.getItem("todos"));
+  const todos = JSON.parse(localStorage.getItem("todos")!);
 
   useEffect(() => {
     return localStorage.setItem("todos", JSON.stringify(localTasks));
   }, [localTasks]);
 
-  const handleTodoAdd = (todoName) => {
-    setLocalTasks((prevTasks) => {
+  const handleTodoAdd = (todoName: any) => {
+    setLocalTasks((prevTasks: any) => {
       let obj = {
         ...prevTasks,
       };
@@ -26,7 +27,7 @@ export default function TodoListApp() {
     });
   };
   const handleToggleAllTasks = () => {
-    setLocalTasks((prevTasks) =>
+    setLocalTasks((prevTasks: any) =>
       Object.keys(prevTasks).map((todoId) => {
         let obj = { ...prevTasks[todoId], status: true };
         return prevTasks[todoId].status === false ? obj : prevTasks[todoId];
@@ -34,25 +35,25 @@ export default function TodoListApp() {
     );
   };
 
-  const handleTodoChange = (id) => (updatedTodo) =>
-    setLocalTasks((prevTasks) => {
+  const handleTodoChange = (id: string) => (updatedTodo: any) =>
+    setLocalTasks((prevTasks: any) => {
       let obj = { ...prevTasks };
-      Object.keys(prevTasks).forEach((todoId) =>
+      Object.keys(prevTasks).forEach((todoId ) =>
         todoId == id
           ? (obj[id] = { ...prevTasks[todoId], ...updatedTodo })
           : null
       );
       return obj;
     });
-  const handleTodoDelete = (id) => (idToDelete) => {
-    setLocalTasks((prevTasks) => {
+  const handleTodoDelete = (id: any) => (idToDelete: any) => {
+    setLocalTasks((prevTasks: any) => {
       let obj = { ...prevTasks };
       delete obj[id];
       return obj;
     });
   };
   const handleDeleteCompleted = () => {
-    setLocalTasks((prevTasks) => {
+    setLocalTasks((prevTasks: any) => {
       let obj = { ...prevTasks };
       Object.keys(prevTasks).forEach((todoId) =>
         obj[todoId].status ? delete obj[todoId] : null
