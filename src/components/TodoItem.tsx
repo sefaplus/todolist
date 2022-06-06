@@ -3,13 +3,11 @@ type Input = HTMLInputElement;
 export default function TodoItem({
   id,
   value,
-  filter,
   onTodoChange,
   onTodoDelete,
 }: {
   id: any;
   value: any;
-  filter: number;
   onTodoChange: Function;
   onTodoDelete: any;
 }) {
@@ -48,13 +46,8 @@ export default function TodoItem({
       (e as any).target.removeEventListener("keypress", handleKeypress);
     }
   }
-  if (filter == 1 && status == 1) {
-    return <></>;
-  } else if (filter == 2 && status == 0) {
-    return <></>;
-  }
   return (
-    <li onClick={handleClick as any}>
+    <li onClick={handleClick as any} key={id}>
       <div className="round">
         <input
           type="checkbox"

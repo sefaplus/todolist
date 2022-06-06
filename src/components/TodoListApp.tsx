@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
 import TaskList from "./TodoList";
 import TodoNameInput from "./TodoNameInput";
-import React from 'react'; 
+import React from "react";
+
+export enum Filter {
+  ALL = "ALL",
+  ACTIVE = "ACTIVE",
+  COMPLETED = "COMPLETED",
+}
 
 export default function TodoListApp() {
   const parsedTodos = JSON.parse(localStorage.getItem("todos")!);
   let [localTasks, setLocalTasks] = useState(
     parsedTodos == undefined ? {} : parsedTodos
   );
-  let [filter, setFilter] = useState(0);
+
+  let [filter, setFilter] = useState(Filter.ALL);
   const todos = JSON.parse(localStorage.getItem("todos")!);
 
   useEffect(() => {
@@ -38,7 +45,7 @@ export default function TodoListApp() {
   const handleTodoChange = (id: string) => (updatedTodo: any) =>
     setLocalTasks((prevTasks: any) => {
       let obj = { ...prevTasks };
-      Object.keys(prevTasks).forEach((todoId ) =>
+      Object.keys(prevTasks).forEach((todoId) =>
         todoId == id
           ? (obj[id] = { ...prevTasks[todoId], ...updatedTodo })
           : null
@@ -74,24 +81,24 @@ export default function TodoListApp() {
       <TodoNameInput
         onClick={handleTodoAdd}
         onClickAllTask={handleToggleAllTasks}
-      />{" "}
+      />
       <ul>
-        {" "}
         <TaskList
           tasks={localTasks}
           filter={filter}
           onTodoChange={handleTodoChange}
           onTodoDelete={handleTodoDelete}
-        />{" "}
-      </ul>{" "}
+        />
+      </ul>
       <footer>
         <div className="todo-list-controls">
-          <button onClick={() => setFilter(0)}> ALL </button>{" "}
-          <button onClick={() => setFilter(1)}> Active </button>{" "}
-          <button onClick={() => setFilter(2)}> Completed </button>{" "}
-          <button onClick={handleDeleteCompleted}> Remove completed </button>{" "}
-        </div>{" "}
-      </footer>{" "}
+          <p> Current tasks: {Object.keys(localTasks).length}</p>
+          <button onClick={() => setFilter(Filter.ALL)}> ALL </button>
+          <button onClick={() => setFilter(Filter.ACTIVE)}> Active </button>
+          <button onClick={() => setFilter(Filter.COMPLETED)}>Completed</button>
+          <button onClick={handleDeleteCompleted}> Remove completed </button>
+        </div>
+      </footer>
     </>
   );
 }
