@@ -26,6 +26,11 @@ input[type=checkbox] {
     border-radius: 15px;
     
 }
+input[type=text]:read-only:focus {
+    outline: none;
+    background: #fff;
+
+}
 ul {
     width: 100%;
     padding: 0;

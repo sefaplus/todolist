@@ -1,8 +1,8 @@
 import TodoListApp from "./components/TodoListApp";
 import ReactDOM from "react-dom/client";
-import './css/styles.css';
+import "./css/styles.css";
 function App() {
-  return(
+  return (
     <div className="todo-list-container">
       <TodoListApp />
     </div>
