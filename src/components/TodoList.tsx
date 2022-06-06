@@ -14,8 +14,13 @@ export default function TaskList({
   onTodoDelete: any;
 }) {
   useEffect(() => {}, [filter]);
-  let tasksArray = Object.entries(tasks);
 
+  type keyPairArray = {
+    0: string;
+    1: object;
+  }
+  let tasksArray = Object.entries(tasks) as Array<keyPairArray>;
+  
   tasksArray = tasksArray.filter((element: any) => {
     return (
       filter === Filter.ALL ||
@@ -24,12 +29,10 @@ export default function TaskList({
         : filter === Filter.ACTIVE)
     );
   });
-  console.log(filter, tasksArray);
-  //console.log(tasks, tasksArray[0][1]);
   return (
     <>
       {}
-      {tasksArray.map(({0: id, 1: value}) => {
+      {tasksArray.map(({ 0: id, 1: value }) => {
         return (
           <TodoItem
             id={id}

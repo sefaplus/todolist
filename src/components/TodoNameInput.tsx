@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import React from 'react'; 
+import { MouseEventHandler, useEffect, useState } from "react";
+import React from "react";
 export default function TodoNameInput({
   onClick,
   onClickAllTask,
 }: {
-  onClick: any;
-  onClickAllTask: any;
+  onClick: Function;
+  onClickAllTask: Function;
 }) {
   let [addTaskText, setAddTaskText] = useState("");
   useEffect(() => {
@@ -33,18 +33,23 @@ export default function TodoNameInput({
     setAddTaskText(target.value);
   };
 
-  const handleAllTaskComplete = (e: Event) => {
+  const handleAllTaskComplete = (e: React.MouseEvent) => {
     onClickAllTask();
   };
   return (
     <div className="todo-name-input">
-      <button onClick={handleAllTaskComplete as any}> ⇩ </button>
+      <button onClick={(e: React.MouseEvent) => handleAllTaskComplete(e)}>
+        {" "}
+        ⇩{" "}
+      </button>
       <input
         id="add-task"
         placeholder="What needs to be done?"
         type="text"
         value={addTaskText}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTaskTextChange(e) }
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          handleTaskTextChange(e)
+        }
       />
       <button onClick={handleAddTask}>ADD</button>
     </div>

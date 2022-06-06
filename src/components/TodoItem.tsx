@@ -1,29 +1,30 @@
-import React from 'react';
-type Input = HTMLInputElement;
+import React, { BaseSyntheticEvent } from "react";
 export default function TodoItem({
   id,
   value,
   onTodoChange,
   onTodoDelete,
 }: {
-  id: any;
+  id: string;
   value: any;
   onTodoChange: Function;
-  onTodoDelete: any;
+  onTodoDelete: Function;
 }) {
   const { task, status } = value;
-  function handleTaskStatus(e: Event) {
-    onTodoChange({ status: (e.target as Input).checked });
+
+  function handleTaskStatus(e: BaseSyntheticEvent) {
+    onTodoChange({ status: (e.target as HTMLInputElement).checked });
   }
-  function handleTodoChange(e: Event) {
-    onTodoChange({ task: (e.target as Input).value });
+  function handleTodoChange(e: BaseSyntheticEvent) {
+    onTodoChange({ task: (e.target as HTMLInputElement).value });
   }
-  function handleTodoDelete(e: Event) {
-    onTodoDelete({ id: (e.target as Input).value });
+  function handleTodoDelete(e: MouseEvent) {
+    onTodoDelete({ id: (e.target as HTMLInputElement).value });
   }
   let double = false;
-  function handleClick(e: Event) {
-    if ((e as any).detail == 1) {
+  function handleClick(e: MouseEvent) {
+    let target = e.target as HTMLInputElement;
+    if (e.detail == 1) {
       setTimeout(() => {
         // if (!double) {
         //   let checkboxStatus = document.querySelector(
@@ -34,16 +35,20 @@ export default function TodoItem({
         double = false;
       }, 250);
     }
-    if ((e as any).detail == 2) {
+    if (e.detail == 2) {
       double = true;
-      (e as any).target.readOnly = false;
-      (e as any).target.addEventListener("keypress", handleKeypress);
+      target.readOnly = false;
+      target.addEventListener("keypress", handleKeypress);
     }
   }
-  function handleKeypress(e: Event) {
-    if ((e as any).key == "Enter") {
-      (e as any).target.readOnly = true;
-      (e as any).target.removeEventListener("keypress", handleKeypress);
+  function handleKeypress(e: KeyboardEvent) {
+    if (e.key == "Enter") {
+      let target = e.target as HTMLInputElement;
+      target.readOnly = true;
+      target.removeEventListener(
+        "keypress",
+        handleKeypress
+      );
     }
   }
   return (
