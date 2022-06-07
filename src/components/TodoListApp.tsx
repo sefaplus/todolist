@@ -2,80 +2,59 @@ import { useEffect, useState } from "react";
 import TaskList from "./TodoList";
 import TodoNameInput from "./TodoNameInput";
 import React from "react";
+import FilterButton from "./FilterButton";
+import Api from "../js/api";
 
-export enum Filter {
+const api = new Api();
+export const enum Filter {
   ALL = "ALL",
   ACTIVE = "ACTIVE",
   COMPLETED = "COMPLETED",
 }
+export type Task = { id: number; status: boolean; task: string };
 
 export default function TodoListApp() {
   const parsedTodos = JSON.parse(localStorage.getItem("todos")!);
-  let [localTasks, setLocalTasks] = useState(
-    parsedTodos == undefined ? {} : parsedTodos
-  );
-  interface taskType {
-    [id: string]: { id: number; status: boolean; task: string };
-  }
-
+  let [localTasks, setLocalTasks] = useState([] as Array<Task>);
   let [filter, setFilter] = useState(Filter.ALL);
 
   useEffect(() => {
-    return localStorage.setItem("todos", JSON.stringify(localTasks));
+    console.log("Reload");
+    api.getData(setLocalTasks, localTasks);
+  }, []);
+
+  useEffect(() => {
+    api.setData(localTasks);
   }, [localTasks]);
 
   const handleTodoAdd = (todoName: string) => {
-    setLocalTasks((prevTasks: taskType) => {
-      let obj: any = {
-        ...prevTasks,
-      };
-      obj[Date.now()] = { status: false, task: todoName, id: Date.now() };
-      return obj;
-      // It woudnt let me to just return {...prevTasks, Date().now : { status: false, task: todoName}}
-      // Theres probably an easier way.
+    setLocalTasks((prevTasks: Array<Task>) => {
+      let newTask: Task = { id: Date.now(), task: todoName, status: false };
+      let newTasks: Array<Task> = [...prevTasks, newTask];
+      return newTasks;
     });
   };
-  const handleToggleAllTasks = () => {
-    setLocalTasks((prevTasks: taskType) =>
-      Object.keys(prevTasks).map((todoId: string) => {
-        let obj: object = { ...prevTasks[todoId], status: true };
-        return prevTasks[todoId].status === false ? obj : prevTasks[todoId];
-      })
+  const handleToggleAllTasks = () =>
+    setLocalTasks((prevTasks: Array<Task>) =>
+      prevTasks.map((todo) => ({ ...todo, status: true }))
     );
-  };
 
-  const handleTodoChange = (id: string) => (updatedTodo: object) =>
-    setLocalTasks((prevTasks: taskType) => {
-      let obj: taskType = { ...prevTasks };
-      Object.keys(prevTasks).forEach((todoId: string) =>
-        todoId == id
-          ? (obj[id] = { ...prevTasks[todoId], ...updatedTodo })
-          : null
-      );
-      return obj;
+  const handleTodoChange = (id: number) => (updatedTodo: Task) =>
+    setLocalTasks((prevTasks: Array<Task>) => {
+      return prevTasks.map((todo) => {
+        return todo.id === id ? { ...todo, ...updatedTodo } : todo;
+      });
     });
-  const handleTodoDelete = (id: string) => (idToDelete: string) => {
-    setLocalTasks((prevTasks: object) => {
-      let obj: taskType = { ...prevTasks };
-      delete obj[id];
-      return obj;
-    });
-  };
+
+  const handleTodoDelete = (id: number) => () =>
+    setLocalTasks((prevTasks: Array<Task>) =>
+      prevTasks.filter((todo) => todo.id !== id)
+    );
+
   const handleDeleteCompleted = () => {
-    setLocalTasks((prevTasks: taskType) => {
-      let obj: taskType = { ...prevTasks };
-      Object.keys(prevTasks).forEach((todoId: string) =>
-        obj[todoId].status ? delete obj[todoId] : null
-      );
-      return obj;
-      // Still have to use temporary obj to return data. This time, returning modified prevTasks doesnt trigger useEffect()
-      // If forEach fn would've been like this:
-      //     Object.keys(prevTasks).forEach((todoId) =>
-      //     prevTasks[todoId].status ? delete prevTasks[todoId] : null
-      //   );
-      //   return prevTasks;
-      // It wouldn't've worked. There's probably an easier way to do this.
-    });
+    setLocalTasks((prevTasks: Array<Task>) =>
+      prevTasks.filter((todo) => !todo.status)
+    );
   };
 
   return (
@@ -94,10 +73,25 @@ export default function TodoListApp() {
       </ul>
       <footer>
         <div className="todo-list-controls">
-          <p> Current tasks: {Object.keys(localTasks).length}</p>
-          <button onClick={() => setFilter(Filter.ALL)}> ALL </button>
-          <button onClick={() => setFilter(Filter.ACTIVE)}> Active </button>
-          <button onClick={() => setFilter(Filter.COMPLETED)}>Completed</button>
+          <p> Current tasks: </p>
+          <FilterButton
+            text="All"
+            filterOption={Filter.ALL}
+            setFilter={setFilter}
+            selected={filter === Filter.ALL}
+          />
+          <FilterButton
+            text="Active"
+            filterOption={Filter.ACTIVE}
+            setFilter={setFilter}
+            selected={filter === Filter.ACTIVE}
+          />
+          <FilterButton
+            text="Complete"
+            filterOption={Filter.COMPLETED}
+            selected={filter === Filter.COMPLETED}
+            setFilter={setFilter}
+          />
           <button onClick={handleDeleteCompleted}> Remove completed </button>
         </div>
       </footer>

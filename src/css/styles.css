@@ -3,6 +3,7 @@ body {
     "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1.6rem;
 }
+
 li {
   list-style-type: none;
 
@@ -106,12 +107,14 @@ footer {
   padding-bottom: 0.5em;
 }
 
-.todo-list-controls button {
+.filter-button {
   margin-left: 0.5em;
   margin-right: 0.5em;
   border: 1.5px solid rgb(0 0 0 / 20%);
-  background: white;
   box-shadow: 2px 2px 6px rgb(0 0 0 / 10%);
+}
+.filter-selected {
+  background: #d3d3d37c;
 }
 .todo-list-controls p {
   font-size: 1rem;

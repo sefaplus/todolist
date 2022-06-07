@@ -1,83 +1,67 @@
 import React, { BaseSyntheticEvent } from "react";
+import { Task } from "./TodoListApp";
 export default function TodoItem({
-  id,
   value,
   onTodoChange,
   onTodoDelete,
 }: {
-  id: string;
-  value: any;
+  value: Task;
   onTodoChange: Function;
   onTodoDelete: Function;
 }) {
-  const { task, status } = value;
+  const { id, task, status } = value;
 
   function handleTaskStatus(e: BaseSyntheticEvent) {
-    onTodoChange({ status: (e.target as HTMLInputElement).checked });
+    onTodoChange({
+      status: (e.target as HTMLInputElement).checked,
+    });
   }
+
   function handleTodoChange(e: BaseSyntheticEvent) {
-    onTodoChange({ task: (e.target as HTMLInputElement).value });
+    onTodoChange({
+      task: (e.target as HTMLInputElement).value,
+    });
   }
-  function handleTodoDelete(e: MouseEvent) {
+
+  function handleTodoDelete(e: React.MouseEvent) {
     onTodoDelete({ id: (e.target as HTMLInputElement).value });
   }
-  let double = false;
-  function handleClick(e: MouseEvent) {
+
+  function handleDblClick(e: React.MouseEvent) {
     let target = e.target as HTMLInputElement;
-    if (e.detail == 1) {
-      setTimeout(() => {
-        // if (!double) {
-        //   let checkboxStatus = document.querySelector(
-        //     `input[id='${id}']`
-        //   ) as HTMLInputElement;
-        //   onTodoChange({ status: !checkboxStatus.checked });
-        // }
-        double = false;
-      }, 250);
-    }
-    if (e.detail == 2) {
-      double = true;
-      target.readOnly = false;
-      target.addEventListener("keypress", handleKeypress);
-    }
+    target.readOnly = false;
   }
-  function handleKeypress(e: KeyboardEvent) {
+
+  function handleKeypress(e: React.KeyboardEvent) {
     if (e.key == "Enter") {
       let target = e.target as HTMLInputElement;
       target.readOnly = true;
-      target.removeEventListener(
-        "keypress",
-        handleKeypress
-      );
     }
   }
   return (
-    <li onClick={handleClick as any} key={id}>
+    <li>
       <div className="round">
         <input
           type="checkbox"
           className="checkmark"
-          value={status}
+          value={`${status}`}
           checked={status}
-          onChange={handleTaskStatus as any}
-          id={id}
+          onChange={handleTaskStatus}
+          id={`${id}`}
         />
-        <label htmlFor={id}></label>
+        <label htmlFor={`${id}`}></label>
       </div>
       <input
         type="text"
-        onChange={handleTodoChange as any}
+        onChange={handleTodoChange}
         className="todolist-task"
-        onClick={() => handleClick}
         value={task}
         readOnly={true}
         onBlur={(e) => (e.target.readOnly = true)}
+        onKeyDown={handleKeypress}
+        onDoubleClick={handleDblClick}
       />
-      <button
-        className="button-rounded"
-        value={id}
-        onClick={handleTodoDelete as any}
-      >
+      <button className="button-rounded" value={id} onClick={handleTodoDelete}>
         X
       </button>
     </li>

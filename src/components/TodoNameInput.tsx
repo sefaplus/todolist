@@ -8,24 +8,18 @@ export default function TodoNameInput({
   onClickAllTask: Function;
 }) {
   let [addTaskText, setAddTaskText] = useState("");
-  useEffect(() => {
-    document
-      .querySelector("#add-task")!
-      .addEventListener("keypress", handleKeyPressses);
-    return () => {
-      document
-        .querySelector("#add-task")!
-        .removeEventListener("keypress", handleKeyPressses);
-    };
-  });
-  const handleKeyPressses = (e: Event) => {
-    if ((e as KeyboardEvent).key == "Enter") {
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key == "Enter") {
       handleAddTask();
     }
   };
+
   const handleAddTask = () => {
-    onClick(addTaskText);
-    setAddTaskText("");
+    if (addTaskText.trim() !== "") {
+      onClick(addTaskText);
+      setAddTaskText("");
+    }
   };
 
   const handleTaskTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,23 +27,22 @@ export default function TodoNameInput({
     setAddTaskText(target.value);
   };
 
-  const handleAllTaskComplete = (e: React.MouseEvent) => {
+  const handleAllTaskComplete = () => {
     onClickAllTask();
   };
+
   return (
     <div className="todo-name-input">
-      <button onClick={(e: React.MouseEvent) => handleAllTaskComplete(e)}>
-        {" "}
-        ⇩{" "}
-      </button>
+      <button
+        onClick={handleAllTaskComplete}
+      >\/</button>
       <input
         id="add-task"
         placeholder="What needs to be done?"
         type="text"
         value={addTaskText}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          handleTaskTextChange(e)
-        }
+        onChange={handleTaskTextChange}
+        onKeyDown={handleKeyPress}
       />
       <button onClick={handleAddTask}>ADD</button>
     </div>
