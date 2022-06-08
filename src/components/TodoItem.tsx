@@ -5,7 +5,7 @@ export default function TodoItem({
   onTodoChange,
   onTodoDelete,
 }: {
-  value: Task;
+  value: any;
   onTodoChange: Function;
   onTodoDelete: Function;
 }) {

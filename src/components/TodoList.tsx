@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import TodoItem from "./TodoItem";
 import React from "react";
 import { Filter, Task } from "./TodoListApp";
+import { getNextKeyDef } from "@testing-library/user-event/dist/keyboard/getNextKeyDef";
 export default function TaskList({
   tasks,
   filter,
@@ -17,12 +18,16 @@ export default function TaskList({
   return (
     <>
       {tasks
-        .filter((todo: Task) =>
-          filter === Filter.ALL || (todo.status
-            ? filter === Filter.COMPLETED
-            : filter === Filter.ACTIVE)
-        )
-        .map((todo: any) => {
+        .filter((todo: Task) => {
+          return (
+            todo != null && // incase todo val is undefined
+            (filter === Filter.ALL ||
+              (todo.status
+                ? filter === Filter.COMPLETED
+                : filter === Filter.ACTIVE))
+          );
+        })
+        .map((todo: Task, index) => {
           return (
             <TodoItem
               value={todo}

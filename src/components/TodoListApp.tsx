@@ -28,32 +28,44 @@ export default function TodoListApp() {
   }, [localTasks]);
 
   const handleTodoAdd = (todoName: string) => {
+    let newId = Date.now()
     setLocalTasks((prevTasks: Array<Task>) => {
-      let newTask: Task = { id: Date.now(), task: todoName, status: false };
+      let newTask: Task = { id: newId, task: todoName, status: false };
       let newTasks: Array<Task> = [...prevTasks, newTask];
       return newTasks;
     });
+    api.addChangeId(newId);
   };
   const handleToggleAllTasks = () =>
     setLocalTasks((prevTasks: Array<Task>) =>
-      prevTasks.map((todo) => ({ ...todo, status: true }))
+      prevTasks.map((todo) => {
+        if (!todo.status) api.addChangeId(todo.id);
+        return { ...todo, status: true };
+      })
     );
 
-  const handleTodoChange = (id: number) => (updatedTodo: Task) =>
+  const handleTodoChange = (id: number) => (updatedTodo: Task) => {
     setLocalTasks((prevTasks: Array<Task>) => {
       return prevTasks.map((todo) => {
         return todo.id === id ? { ...todo, ...updatedTodo } : todo;
       });
     });
+    api.addChangeId(id);
+  };
 
-  const handleTodoDelete = (id: number) => () =>
+  const handleTodoDelete = (id: number) => () => {
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.filter((todo) => todo.id !== id)
     );
+    api.addDeleteId(id);
+  };
 
   const handleDeleteCompleted = () => {
     setLocalTasks((prevTasks: Array<Task>) =>
-      prevTasks.filter((todo) => !todo.status)
+      prevTasks.filter((todo) => {
+        todo.status ? api.addDeleteId(todo.id) : null;
+        return !todo.status;
+      })
     );
   };
 
@@ -73,7 +85,7 @@ export default function TodoListApp() {
       </ul>
       <footer>
         <div className="todo-list-controls">
-          <p> Current tasks: </p>
+          <p> Current tasks: {localTasks.length} </p>
           <FilterButton
             text="All"
             filterOption={Filter.ALL}
@@ -93,6 +105,7 @@ export default function TodoListApp() {
             setFilter={setFilter}
           />
           <button onClick={handleDeleteCompleted}> Remove completed </button>
+          <button onClick={api.saveFile}> Save to File </button>
         </div>
       </footer>
     </>
