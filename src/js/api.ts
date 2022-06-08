@@ -7,17 +7,18 @@ export default class Api {
   static changedTasks: Array<number> = [];
   static deletedTasks: Array<number> = [];
   addChangeId(id: number) {
+    console.log(Api.changedTasks);
     if (!Api.changedTasks.includes(id)) {
       clearTimeout(Api.timer);
       Api.changedTasks.push(id);
-      Api.timer = setTimeout(() => this.setTask(), 500); // Wait 500ms  before sending anything
+      Api.timer = setTimeout(() => this.setTask(), 1000); // Wait 1s before sending anything
     }
   }
   addDeleteId(id: number) {
     if (!Api.deletedTasks.includes(id)) {
       clearTimeout(Api.timer);
       Api.deletedTasks.push(id);
-      Api.timer = setTimeout(() => this.setTask(), 500); // Wait 500ms  before sending anything
+      Api.timer = setTimeout(() => this.setTask(), 1000); // Wait 1s before sending anything
     }
   }
   setData(newData: Array<Task>) {
@@ -46,28 +47,32 @@ export default class Api {
     if (!Api.fetching) {
       Api.fetching = true;
       if (Api.changedTasks.length || Api.deletedTasks.length) {
-        Api.fetching = true;
         try {
-          Api.changedTasks.map(async (curId) => {
-            await fetch(`http://localhost:5000/todos/${curId}`, {
+          let dataToSend: Task | Array<Task> = Api.data.filter((el) =>
+            Api.changedTasks.includes(el.id)
+          );
+          console.log(dataToSend);
+          if (Api.changedTasks.length) {
+            await fetch(`http://localhost:5000/todos/${Api.changedTasks[0]}`, {
               method: "POST",
               headers: { "Content-Type": "application/json;charset=UTF-8" },
-              body: JSON.stringify(Api.data.filter((el) => el.id == curId)),
+              body: JSON.stringify(dataToSend),
             }).then(() => {
               Api.fetching = false;
+              Api.changedTasks = [];
+              console.log("ass");
             });
-            Api.changedTasks.shift();
-          });
+          }
 
-          Api.deletedTasks.map(async (id) => {
-            await fetch(`http://localhost:5000/todos/delete/${id}`, {
+          if (Api.deletedTasks.length) {
+            await fetch(`http://localhost:5000/todos/delete/`, {
               method: "POST",
               headers: { "Content-Type": "application/json;charset=UTF-8" },
+              body: JSON.stringify(Api.deletedTasks),
             }).then(() => {
               Api.fetching = false;
             });
-            Api.changedTasks.shift();
-          });
+          }
         } catch (err) {
           console.log("Failed at single task delete: " + err);
         } finally {
