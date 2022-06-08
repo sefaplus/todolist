@@ -6,7 +6,6 @@ body {
 
 li {
   list-style-type: none;
-
   border-bottom: 1px solid rgb(0 0 0 / 20%);
   padding-top: 0.5em;
   padding-bottom: 0.5em;
@@ -15,13 +14,17 @@ li {
   flex-wrap: nowrap;
   flex-direction: row;
 }
-li > input[type="text"],
+li > textarea,
 .todo-name-input > input[type="text"] {
   width: 100%;
   border: none;
   font-size: 1.3rem;
+  resize: none;
 }
-li > input[type="text"]:focus,
+textarea {
+  height:100%;
+}
+li > textarea:focus,
 .todo-name-input > input[type="text"]:focus {
   background-color: rgb(0 0 0 / 9%);
   transition: all ease-in 0.2s;

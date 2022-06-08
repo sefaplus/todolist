@@ -1,16 +1,19 @@
-import React, { BaseSyntheticEvent } from "react";
+import React, { BaseSyntheticEvent, useEffect } from "react";
 import { Task } from "./TodoListApp";
 export default function TodoItem({
   value,
   onTodoChange,
   onTodoDelete,
 }: {
-  value: any;
+  value: Task;
   onTodoChange: Function;
   onTodoDelete: Function;
 }) {
   const { id, task, status } = value;
-
+  useEffect(() => {
+    let textarea = document.getElementById(`${id}text`) as HTMLTextAreaElement;
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, []);
   function handleTaskStatus(e: BaseSyntheticEvent) {
     onTodoChange({
       status: (e.target as HTMLInputElement).checked,
@@ -18,6 +21,8 @@ export default function TodoItem({
   }
 
   function handleTodoChange(e: BaseSyntheticEvent) {
+    e.target.style.height = "inherit";
+    e.target.style.height = `${e.target.scrollHeight}px`;
     onTodoChange({
       task: (e.target as HTMLInputElement).value,
     });
@@ -51,8 +56,7 @@ export default function TodoItem({
         />
         <label htmlFor={`${id}`}></label>
       </div>
-      <input
-        type="text"
+      <textarea
         onChange={handleTodoChange}
         className="todolist-task"
         value={task}
@@ -60,6 +64,7 @@ export default function TodoItem({
         onBlur={(e) => (e.target.readOnly = true)}
         onKeyDown={handleKeypress}
         onDoubleClick={handleDblClick}
+        id={`${id}text`}
       />
       <button className="button-rounded" value={id} onClick={handleTodoDelete}>
         X

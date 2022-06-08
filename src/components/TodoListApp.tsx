@@ -28,18 +28,18 @@ export default function TodoListApp() {
   }, [localTasks]);
 
   const handleTodoAdd = (todoName: string) => {
-    let newId = Date.now()
+    let newId = Date.now();
     setLocalTasks((prevTasks: Array<Task>) => {
       let newTask: Task = { id: newId, task: todoName, status: false };
       let newTasks: Array<Task> = [...prevTasks, newTask];
       return newTasks;
     });
-    api.addChangeId(newId);
+    api.pushForChange(newId);
   };
   const handleToggleAllTasks = () =>
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.map((todo) => {
-        if (!todo.status) api.addChangeId(todo.id);
+        if (!todo.status) api.pushForChange(todo.id);
         return { ...todo, status: true };
       })
     );
@@ -50,20 +50,20 @@ export default function TodoListApp() {
         return todo.id === id ? { ...todo, ...updatedTodo } : todo;
       });
     });
-    api.addChangeId(id);
+    api.pushForChange(id);
   };
 
   const handleTodoDelete = (id: number) => () => {
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.filter((todo) => todo.id !== id)
     );
-    api.addDeleteId(id);
+    api.pushForDelete(id);
   };
 
   const handleDeleteCompleted = () => {
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.filter((todo) => {
-        todo.status ? api.addDeleteId(todo.id) : null;
+        todo.status ? api.pushForDelete(todo.id) : null;
         return !todo.status;
       })
     );
