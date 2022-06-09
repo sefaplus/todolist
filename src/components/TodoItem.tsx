@@ -9,9 +9,9 @@ export default function TodoItem({
   onTodoChange: Function;
   onTodoDelete: Function;
 }) {
-  const { id, task, status } = value;
+  const { _id, task, status } = value;
   useEffect(() => {
-    let textarea = document.getElementById(`${id}text`) as HTMLTextAreaElement;
+    let textarea = document.getElementById(`${_id}text`) as HTMLTextAreaElement;
     textarea.style.height = `${textarea.scrollHeight}px`;
   }, []);
   function handleTaskStatus(e: BaseSyntheticEvent) {
@@ -52,9 +52,9 @@ export default function TodoItem({
           value={`${status}`}
           checked={status}
           onChange={handleTaskStatus}
-          id={`${id}`}
+          id={`${_id}`}
         />
-        <label htmlFor={`${id}`}></label>
+        <label htmlFor={`${_id}`}></label>
       </div>
       <textarea
         onChange={handleTodoChange}
@@ -64,9 +64,9 @@ export default function TodoItem({
         onBlur={(e) => (e.target.readOnly = true)}
         onKeyDown={handleKeypress}
         onDoubleClick={handleDblClick}
-        id={`${id}text`}
+        id={`${_id}text`}
       />
-      <button className="button-rounded" value={id} onClick={handleTodoDelete}>
+      <button className="button-rounded" value={_id} onClick={handleTodoDelete}>
         X
       </button>
     </li>

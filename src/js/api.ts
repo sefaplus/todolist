@@ -18,7 +18,7 @@ export default class Api {
     Api.timer = setTimeout(() => this.setTask(), 1000); // Wait 1s before sending anything
   }
 
-  async getData(setter: Function, data: Array<Task>) {
+  async getData(setter: Function) {
     if (!Api.fetching) {
       Api.fetching = true;
       try {
@@ -41,10 +41,10 @@ export default class Api {
       Api.fetching = true;
       try {
         let dataToSend: Array<Task> = Api.data.filter((el) =>
-          Api.changedTasks.includes(el.id)
+          Api.changedTasks.includes(el._id)
         );
         if (Api.changedTasks.length) {
-          await fetch(`http://localhost:5000/todos/${Api.changedTasks[0]}`, {
+          await fetch(`http://localhost:5000/todos/update/${Api.changedTasks[0]}`, {
             method: "POST",
             headers: { "Content-Type": "application/json;charset=UTF-8" },
             body: JSON.stringify(dataToSend),

@@ -3,15 +3,15 @@ import TaskList from "./TodoList";
 import TodoNameInput from "./TodoNameInput";
 import React from "react";
 import FilterButton from "./FilterButton";
-import Api from "../js/api";
+import API from "../js/ApiMongo";
 
-const api = new Api();
+const MongoAPI = new API();
 export const enum Filter {
   ALL = "ALL",
   ACTIVE = "ACTIVE",
   COMPLETED = "COMPLETED",
 }
-export type Task = { id: number; status: boolean; task: string };
+export type Task = { _id: number; status: boolean; task: string };
 
 export default function TodoListApp() {
   const parsedTodos = JSON.parse(localStorage.getItem("todos")!);
@@ -20,26 +20,26 @@ export default function TodoListApp() {
 
   useEffect(() => {
     console.log("Reload");
-    api.getData(setLocalTasks, localTasks);
+    MongoAPI.fetchAndSet(setLocalTasks, "http://localhost:5000/api");
   }, []);
 
   useEffect(() => {
-    api.setData(localTasks);
+    MongoAPI.setApiData(localTasks);
   }, [localTasks]);
 
   const handleTodoAdd = (todoName: string) => {
     let newId = Date.now();
     setLocalTasks((prevTasks: Array<Task>) => {
-      let newTask: Task = { id: newId, task: todoName, status: false };
+      let newTask: Task = { _id: newId, task: todoName, status: false };
       let newTasks: Array<Task> = [...prevTasks, newTask];
       return newTasks;
     });
-    api.pushForChange(newId);
+    MongoAPI.addToUpdateList(newId);
   };
   const handleToggleAllTasks = () =>
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.map((todo) => {
-        if (!todo.status) api.pushForChange(todo.id);
+        MongoAPI.addToUpdateList(todo._id);
         return { ...todo, status: true };
       })
     );
@@ -47,23 +47,23 @@ export default function TodoListApp() {
   const handleTodoChange = (id: number) => (updatedTodo: Task) => {
     setLocalTasks((prevTasks: Array<Task>) => {
       return prevTasks.map((todo) => {
-        return todo.id === id ? { ...todo, ...updatedTodo } : todo;
+        return todo._id === id ? { ...todo, ...updatedTodo } : todo;
       });
     });
-    api.pushForChange(id);
+    MongoAPI.addToUpdateList(id);
   };
 
   const handleTodoDelete = (id: number) => () => {
     setLocalTasks((prevTasks: Array<Task>) =>
-      prevTasks.filter((todo) => todo.id !== id)
+      prevTasks.filter((todo) => todo._id !== id)
     );
-    api.pushForDelete(id);
+    MongoAPI.addToDeleteList(id);
   };
 
   const handleDeleteCompleted = () => {
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.filter((todo) => {
-        todo.status ? api.pushForDelete(todo.id) : null;
+        todo.status ? MongoAPI.addToDeleteList(todo._id) : null;
         return !todo.status;
       })
     );
@@ -105,7 +105,9 @@ export default function TodoListApp() {
             setFilter={setFilter}
           />
           <button onClick={handleDeleteCompleted}> Remove completed </button>
-          <button onClick={api.saveFile}> Save to File </button>
+          <button onClick={() => MongoAPI.saveToCloud(setLocalTasks)}>
+            Save to File
+          </button>
         </div>
       </footer>
     </>

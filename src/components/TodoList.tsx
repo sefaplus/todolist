@@ -31,9 +31,9 @@ export default function TaskList({
           return (
             <TodoItem
               value={todo}
-              onTodoChange={onTodoChange(todo.id)}
-              onTodoDelete={onTodoDelete(todo.id)}
-              key={todo.id}
+              onTodoChange={onTodoChange(todo._id)}
+              onTodoDelete={onTodoDelete(todo._id)}
+              key={todo._id}
             />
           );
         })}
