@@ -4,6 +4,8 @@ import TodoNameInput from "./TodoNameInput";
 import React from "react";
 import FilterButton from "./FilterButton";
 import API from "../js/ApiMongo";
+import UploadDialog from "./UploadTodoList";
+import { Link, useNavigate } from "react-router-dom";
 
 const MongoAPI = new API();
 export const enum Filter {
@@ -14,13 +16,14 @@ export const enum Filter {
 export type Task = { _id: number; status: boolean; task: string };
 
 export default function TodoListApp() {
+  let navigator = useNavigate();
   const parsedTodos = JSON.parse(localStorage.getItem("todos")!);
   let [localTasks, setLocalTasks] = useState([] as Array<Task>);
   let [filter, setFilter] = useState(Filter.ALL);
-
+  let [dialogVisible, setDialogVisible] = useState(false);
   useEffect(() => {
     console.log("Reload");
-    MongoAPI.fetchAndSet(setLocalTasks, "http://localhost:5000/api");
+    MongoAPI.fetchAndSet(setLocalTasks, "http://localhost:5000/api", navigator);
   }, []);
 
   useEffect(() => {
@@ -68,9 +71,17 @@ export default function TodoListApp() {
       })
     );
   };
-
+  const handleDialogShow = () => {
+    setDialogVisible(true);
+  };
   return (
     <>
+      <UploadDialog
+        visible={dialogVisible}
+        setDialogVisible={setDialogVisible}
+        setOwnTaskList={MongoAPI.setOwnTaskList}
+        setLocalTasks={setLocalTasks}
+      />
       <TodoNameInput
         onClick={handleTodoAdd}
         onClickAllTask={handleToggleAllTasks}
@@ -86,28 +97,49 @@ export default function TodoListApp() {
       <footer>
         <div className="todo-list-controls">
           <p> Current tasks: {localTasks.length} </p>
-          <FilterButton
-            text="All"
-            filterOption={Filter.ALL}
-            setFilter={setFilter}
-            selected={filter === Filter.ALL}
-          />
-          <FilterButton
-            text="Active"
-            filterOption={Filter.ACTIVE}
-            setFilter={setFilter}
-            selected={filter === Filter.ACTIVE}
-          />
-          <FilterButton
-            text="Complete"
-            filterOption={Filter.COMPLETED}
-            selected={filter === Filter.COMPLETED}
-            setFilter={setFilter}
-          />
-          <button onClick={handleDeleteCompleted}> Remove completed </button>
-          <button onClick={() => MongoAPI.saveToCloud(setLocalTasks)}>
-            Save to File
-          </button>
+          <div>
+            <FilterButton
+              text="All"
+              filterOption={Filter.ALL}
+              setFilter={setFilter}
+              selected={filter === Filter.ALL}
+            />
+            <FilterButton
+              text="Active"
+              filterOption={Filter.ACTIVE}
+              setFilter={setFilter}
+              selected={filter === Filter.ACTIVE}
+            />
+            <FilterButton
+              text="Complete"
+              filterOption={Filter.COMPLETED}
+              selected={filter === Filter.COMPLETED}
+              setFilter={setFilter}
+            />
+            <button className="filter-button" onClick={handleDeleteCompleted}>
+              Remove completed
+            </button>
+          </div>
+          <div>
+            <button
+              className="filter-button"
+              onClick={() =>
+                (location.href = "http://localhost:5000/api/download")
+              }
+            >
+              Download this list
+            </button>
+            <button className="filter-button" onClick={handleDialogShow}>
+              Upload todo list from File
+            </button>
+            <button
+              className="filter-button"
+              onClick={() => MongoAPI.saveToCloud(setLocalTasks)}
+            >
+              SYNC
+            </button>
+            <Link to='/'> LOGIN </Link>
+          </div>
         </div>
       </footer>
     </>

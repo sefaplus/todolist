@@ -1,5 +1,4 @@
 import { Task } from "../components/TodoListApp";
-
 export default class API {
   static fetching: boolean = false;
   static toUpdate: Array<number> = []; // Array of ids to update
@@ -31,22 +30,32 @@ export default class API {
   addToDeleteList(id: number) {
     API.toDelete.includes(id) ? null : API.toDelete.push(id);
   }
-  async fetchAndSet(setter: Function, URI: string) {
+  async fetchAndSet(setter: Function, URI: string, navigator: Function) {
     if (!API.fetching) {
       API.fetching = true;
-      let response = await fetch(URI, {
-        method: "GET",
-        mode: "cors",
-        headers: { "Content-Type": "application/json;charset=UTF-8" },
-      });
-      if (response.ok) {
-        let tasks = await response.json();
-        setter(tasks);
-        API.fetching = false;
-      } else {
-        API.fetching = false;
-        console.log("fetchAndSet succeded but not with OK status");
-        throw new Error("Got status " + response.status);
+      try {
+        let response = await fetch(URI, {
+          method: "GET",
+          mode: "cors",
+          credentials: "include",
+          headers: { "Content-Type": "application/json;charset=UTF-8" },
+        });
+        if (response.ok) {
+          let val = await response.json();
+          if(val.notLogged) {
+            navigator("/")
+          } else {
+            setter(val);
+          }
+         
+          API.fetching = false;
+        } else {
+          API.fetching = false;
+          console.log("fetchAndSet succeded but not with OK status");
+          throw new Error("Got status " + response.status);
+        }
+      } catch (err) {
+        setter([{ id: 0, task: `${err}. Please try again`, status: false }]);
       }
     }
   }
@@ -61,6 +70,7 @@ export default class API {
       let response = await fetch("http://localhost:5000/api/update", {
         method: "PATCH",
         mode: "cors",
+        credentials: "include",
         headers: { "Content-Type": "application/json;charset=UTF-8" },
         body: JSON.stringify(dataToSend),
       })
@@ -94,6 +104,7 @@ export default class API {
     let response = await fetch("http://localhost:5000/api/updateCloud", {
       method: "PATCH",
       mode: "cors",
+      credentials: "include",
       headers: { "Content-Type": "application/json;charset=UTF-8" },
     });
     if (response.ok) {
@@ -102,6 +113,19 @@ export default class API {
     } else {
       console.log("saveToCloud succeded but not with OK status");
       throw new Error("Got status " + response.status);
+    }
+  }
+  async setOwnTaskList(content: string, setter: Function) {
+    let response = await fetch("http://localhost:5000/api/setOwnTaskList", {
+      method: "POST",
+      mode: "cors",
+      credentials: "include",
+      headers: { "Content-Type": "application/json;charset=UTF-8" },
+      body: content,
+    });
+    if (response.ok) {
+      let val = await response.json();
+      setter(val);
     }
   }
 }
