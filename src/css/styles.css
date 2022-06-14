@@ -49,6 +49,9 @@ button {
   background: white;
   box-shadow: 2px 2px 6px rgb(0 0 0 / 10%);
 }
+button:hover {
+  cursor: pointer;
+}
 body button:hover {
   background: #d3d3d37c;
   transition: all ease-in 0.15s;
@@ -129,7 +132,11 @@ footer {
   margin-bottom: 1em;
 }
 .todo-list-controls div:last-child button {
-  background-color: rgba(96, 202, 119, 35%);
+  background-color: rgba(67, 255, 108, 0.35);
+}
+.todo-list-controls div:last-child button:hover {
+
+  background-color: rgba(6, 95, 26, 0.35);
 }
 .round {
   position: relative;
@@ -225,4 +232,25 @@ footer {
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: 1em;
+}
+
+.login-container {
+    width: 45%;
+    height: auto;
+    border-radius: 0.5em;
+    padding: 0.8em;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    justify-content: space-around;
+    background-color: #ffffff;
+    box-shadow: 2px 3px 7px 2px rgb(0 0 0 / 9%);
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+.login-form * {
+  margin: 1em;
 }

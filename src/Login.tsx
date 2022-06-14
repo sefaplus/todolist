@@ -8,13 +8,13 @@ export default function Login() {
   let navigate = useNavigate();
   let [login, setLogin] = useState('user1');
   let [password, setPassword] = useState('password1');
-  let [loggingStatus, setLoggingStatus] = useState('')
+  let [loggingStatus, setLoggingStatus] = useState('Please sign in..')
 
   async function handleSubmit(e: any) {
     e.preventDefault();
     setLoggingStatus('LOGGING IN...');
     let response = await API.login(login, password);
-    setLoggingStatus(JSON.stringify(response));
+    navigate('/todolist')
   }
   async function checkLogin(e: any) {
    let response = await API.checkLogin();
@@ -23,9 +23,10 @@ export default function Login() {
   useEffect(()=> {
   })
   return (
-    <main style={{ padding: "1rem 0" }}>
+    <main className="login-container">
       <h1>{loggingStatus}</h1>
-      <form onSubmit={handleSubmit}>
+      <form className="login-form" onSubmit={handleSubmit}>
+        <label htmlFor="login"> LOGIN:</label>
         <input
           type="text"
           value={login}
@@ -33,6 +34,7 @@ export default function Login() {
           placeholder="yourId"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLogin(e.target.value)}
         />
+        <label htmlFor="password"> LOGIN:</label>
         <input
           type="text"
           value={password}
@@ -41,11 +43,9 @@ export default function Login() {
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
         />
         <button type="submit" value="SUBMIT">
-          Login{" "}
+          Login
         </button>
       </form>
-      <button onClick={checkLogin}> Am i logged in?</button>
-      <Link to="/todolist">GO TO TODO LIST</Link>
     </main>
   );
 }

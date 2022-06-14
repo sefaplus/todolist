@@ -42,12 +42,12 @@ export default class API {
         });
         if (response.ok) {
           let val = await response.json();
-          if(val.notLogged) {
-            navigator("/")
+          if (val.notLogged) {
+            navigator("/");
           } else {
             setter(val);
           }
-         
+
           API.fetching = false;
         } else {
           API.fetching = false;
@@ -86,6 +86,7 @@ export default class API {
       let response = await fetch("http://localhost:5000/api/delete", {
         method: "DELETE",
         mode: "cors",
+        credentials: "include",
         headers: { "Content-Type": "application/json;charset=UTF-8" },
         body: JSON.stringify(list),
       })
