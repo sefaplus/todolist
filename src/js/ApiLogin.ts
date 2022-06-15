@@ -2,7 +2,7 @@ export default class LoginAPI {
   async login(login: string, pass: string) {
     let response: any;
     try {
-      response = await fetch("http://localhost:5000/user/Login", {
+      response = await fetch("http://localhost:5000/api/user/Login", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json;charset=UTF-8" },

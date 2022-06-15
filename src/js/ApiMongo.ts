@@ -1,14 +1,16 @@
 import { Task } from "../components/TodoListApp";
 export default class API {
   static fetching: boolean = false;
-  static toUpdate: Array<number> = []; // Array of ids to update
-  static toDelete: Array<number> = [];
+  static toUpdate: Array<string> = []; // Array of ids to update
+  static toDelete: Array<string> = [];
   static Timer: ReturnType<typeof setTimeout>;
   static data: Array<Task> = [];
+  static setLocalTasksFn: Function;
 
   setApiData(tasks: Array<Task>) {
     clearTimeout(API.Timer);
     API.data = tasks;
+
     if (API.toUpdate.length > 0 && API.toDelete.length > 0) {
       API.Timer = setTimeout(() => {
         this.Update(API.toUpdate);
@@ -24,15 +26,16 @@ export default class API {
       }, 1000);
     }
   }
-  addToUpdateList(id: number) {
+  addToUpdateList(id: string) {
     API.toUpdate.includes(id) ? null : API.toUpdate.push(id);
   }
-  addToDeleteList(id: number) {
+  addToDeleteList(id: string) {
     API.toDelete.includes(id) ? null : API.toDelete.push(id);
   }
   async fetchAndSet(setter: Function, URI: string, navigator: Function) {
     if (!API.fetching) {
       API.fetching = true;
+
       try {
         let response = await fetch(URI, {
           method: "GET",
@@ -42,6 +45,7 @@ export default class API {
         });
         if (response.ok) {
           let val = await response.json();
+
           if (val.notLogged) {
             navigator("/");
           } else {
@@ -51,7 +55,9 @@ export default class API {
           API.fetching = false;
         } else {
           API.fetching = false;
+
           console.log("fetchAndSet succeded but not with OK status");
+
           throw new Error("Got status " + response.status);
         }
       } catch (err) {
@@ -60,12 +66,12 @@ export default class API {
     }
   }
 
-  private async Update(list: Array<number>) {
+  private async Update(list: Array<string>) {
     // Updates and Adds tasks that yet not exist.
-
     let dataToSend: Array<Task> = API.data.filter((el: Task) =>
       list.includes(el._id)
     );
+
     if (dataToSend.length > 0) {
       let response = await fetch("http://localhost:5000/api/update", {
         method: "PATCH",
@@ -81,7 +87,7 @@ export default class API {
         });
     }
   }
-  private async Delete(list: Array<number>) {
+  private async Delete(list: Array<string>) {
     if (list.length > 0) {
       let response = await fetch("http://localhost:5000/api/delete", {
         method: "DELETE",
@@ -110,9 +116,11 @@ export default class API {
     });
     if (response.ok) {
       let tasks = await response.json();
+
       setter(tasks);
     } else {
       console.log("saveToCloud succeded but not with OK status");
+
       throw new Error("Got status " + response.status);
     }
   }
@@ -126,6 +134,7 @@ export default class API {
     });
     if (response.ok) {
       let val = await response.json();
+
       setter(val);
     }
   }

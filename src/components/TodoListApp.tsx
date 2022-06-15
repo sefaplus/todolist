@@ -13,14 +13,15 @@ export const enum Filter {
   ACTIVE = "ACTIVE",
   COMPLETED = "COMPLETED",
 }
-export type Task = { _id: number; status: boolean; task: string };
+export type Task = { _id: string; status: boolean; task: string };
 
 export default function TodoListApp() {
-  let navigator = useNavigate();
   const parsedTodos = JSON.parse(localStorage.getItem("todos")!);
+  const navigator = useNavigate();
   let [localTasks, setLocalTasks] = useState([] as Array<Task>);
   let [filter, setFilter] = useState(Filter.ALL);
   let [dialogVisible, setDialogVisible] = useState(false);
+
   useEffect(() => {
     console.log("Reload");
     MongoAPI.fetchAndSet(setLocalTasks, "http://localhost:5000/api", navigator);
@@ -31,23 +32,27 @@ export default function TodoListApp() {
   }, [localTasks]);
 
   const handleTodoAdd = (todoName: string) => {
-    let newId = Date.now();
+    let newId = JSON.stringify(Date.now());
+
     setLocalTasks((prevTasks: Array<Task>) => {
       let newTask: Task = { _id: newId, task: todoName, status: false };
       let newTasks: Array<Task> = [...prevTasks, newTask];
+
       return newTasks;
     });
+
     MongoAPI.addToUpdateList(newId);
   };
   const handleToggleAllTasks = () =>
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.map((todo) => {
         MongoAPI.addToUpdateList(todo._id);
+
         return { ...todo, status: true };
       })
     );
 
-  const handleTodoChange = (id: number) => (updatedTodo: Task) => {
+  const handleTodoChange = (id: string) => (updatedTodo: Task) => {
     setLocalTasks((prevTasks: Array<Task>) => {
       return prevTasks.map((todo) => {
         return todo._id === id ? { ...todo, ...updatedTodo } : todo;
@@ -56,7 +61,7 @@ export default function TodoListApp() {
     MongoAPI.addToUpdateList(id);
   };
 
-  const handleTodoDelete = (id: number) => () => {
+  const handleTodoDelete = (id: string) => () => {
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.filter((todo) => todo._id !== id)
     );
@@ -67,6 +72,7 @@ export default function TodoListApp() {
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.filter((todo) => {
         todo.status ? MongoAPI.addToDeleteList(todo._id) : null;
+
         return !todo.status;
       })
     );
@@ -138,7 +144,7 @@ export default function TodoListApp() {
             >
               SYNC
             </button>
-            <Link to='/'> LOGIN </Link>
+            <Link to="/"> LOGIN </Link>
           </div>
         </div>
       </footer>
