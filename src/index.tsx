@@ -2,16 +2,9 @@ import TodoListApp from "./components/TodoListApp"; // Werid but changing webpac
 import ReactDOM from "react-dom/client";
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./Login";
-
+import Login from "./routes/Login";
+import App from "./routes/App";
 import "./css/styles.css";
-function App() {
-  return (
-    <div className="todo-list-container">
-      <TodoListApp />
-    </div>
-  );
-}
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(

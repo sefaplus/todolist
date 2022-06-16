@@ -6,6 +6,7 @@ import FilterButton from "./FilterButton";
 import API from "../js/ApiMongo";
 import UploadDialog from "./UploadTodoList";
 import { Link, useNavigate } from "react-router-dom";
+import ApiLogin from "../js/ApiLogin";
 
 const MongoAPI = new API();
 export const enum Filter {
@@ -24,6 +25,7 @@ export default function TodoListApp() {
 
   useEffect(() => {
     console.log("Reload");
+    ApiLogin.checkLogin(navigator);
     MongoAPI.fetchAndSet(setLocalTasks, "http://localhost:5000/api", navigator);
   }, []);
 
