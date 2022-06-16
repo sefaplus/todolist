@@ -3,12 +3,12 @@ import TaskList from "./TodoList";
 import TodoNameInput from "./TodoNameInput";
 import React from "react";
 import FilterButton from "./FilterButton";
-import API from "../js/ApiMongo";
+import ApiMongo from "../js/ApiMongo";
+import ApiLogin from "../js/ApiLogin";
 import UploadDialog from "./UploadTodoList";
 import { Link, useNavigate } from "react-router-dom";
-import ApiLogin from "../js/ApiLogin";
+import WarningDialog from "./WarningDialog";
 
-const MongoAPI = new API();
 export const enum Filter {
   ALL = "ALL",
   ACTIVE = "ACTIVE",
@@ -23,14 +23,17 @@ export default function TodoListApp() {
   let [filter, setFilter] = useState(Filter.ALL);
   let [dialogVisible, setDialogVisible] = useState(false);
 
+  let [warningVisible, setWarningVisible] = useState(false);
+  let [errorText, setErrorText] = useState("");
   useEffect(() => {
     console.log("Reload");
+    ApiMongo.setWarning(setErrorText, setWarningVisible);
     ApiLogin.checkLogin(navigator);
-    MongoAPI.fetchAndSet(setLocalTasks, "http://localhost:5000/api", navigator);
+    ApiMongo.fetchAndSet(setLocalTasks, "http://localhost:5000/api", navigator);
   }, []);
 
   useEffect(() => {
-    MongoAPI.setApiData(localTasks);
+    ApiMongo.setApiData(localTasks);
   }, [localTasks]);
 
   const handleTodoAdd = (todoName: string) => {
@@ -43,12 +46,12 @@ export default function TodoListApp() {
       return newTasks;
     });
 
-    MongoAPI.addToUpdateList(newId);
+    ApiMongo.addToUpdateList(newId);
   };
   const handleToggleAllTasks = () =>
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.map((todo) => {
-        MongoAPI.addToUpdateList(todo._id);
+        ApiMongo.addToUpdateList(todo._id);
 
         return { ...todo, status: true };
       })
@@ -60,20 +63,20 @@ export default function TodoListApp() {
         return todo._id === id ? { ...todo, ...updatedTodo } : todo;
       });
     });
-    MongoAPI.addToUpdateList(id);
+    ApiMongo.addToUpdateList(id);
   };
 
   const handleTodoDelete = (id: string) => () => {
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.filter((todo) => todo._id !== id)
     );
-    MongoAPI.addToDeleteList(id);
+    ApiMongo.addToDeleteList(id);
   };
 
   const handleDeleteCompleted = () => {
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.filter((todo) => {
-        todo.status ? MongoAPI.addToDeleteList(todo._id) : null;
+        todo.status ? ApiMongo.addToDeleteList(todo._id) : null;
 
         return !todo.status;
       })
@@ -84,10 +87,15 @@ export default function TodoListApp() {
   };
   return (
     <>
+      <WarningDialog
+        errorText={errorText}
+        warningVisible={warningVisible}
+        setWarningVisible={setWarningVisible}
+      />
       <UploadDialog
         visible={dialogVisible}
         setDialogVisible={setDialogVisible}
-        setOwnTaskList={MongoAPI.setOwnTaskList}
+        setOwnTaskList={ApiMongo.setOwnTaskList}
         setLocalTasks={setLocalTasks}
       />
       <TodoNameInput
@@ -142,7 +150,7 @@ export default function TodoListApp() {
             </button>
             <button
               className="filter-button"
-              onClick={() => MongoAPI.saveToCloud(setLocalTasks)}
+              onClick={() => ApiMongo.saveToCloud(setLocalTasks)}
             >
               SYNC
             </button>

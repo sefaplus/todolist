@@ -27,7 +27,7 @@ export default function TaskList({
                 : filter === Filter.ACTIVE))
           );
         })
-        .map((todo: Task, index) => {
+        .map((todo: Task) => {
           return (
             <TodoItem
               value={todo}

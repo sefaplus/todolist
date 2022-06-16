@@ -1,5 +1,5 @@
 import { Task } from "../components/TodoListApp";
-export default class API {
+export default class ApiMongo {
   static fetching: boolean = false;
   static toUpdate: Array<string> = []; // Array of ids to update
   static toDelete: Array<string> = [];
@@ -7,34 +7,38 @@ export default class API {
   static data: Array<Task> = [];
   static setLocalTasksFn: Function;
 
-  setApiData(tasks: Array<Task>) {
-    clearTimeout(API.Timer);
-    API.data = tasks;
+  /* Error */
+  static setErrorText: Function;
+  static setWarningVisible: Function;
 
-    if (API.toUpdate.length > 0 && API.toDelete.length > 0) {
-      API.Timer = setTimeout(() => {
-        this.Update(API.toUpdate);
-        this.Delete(API.toDelete);
+  static setApiData(tasks: Array<Task>) {
+    clearTimeout(ApiMongo.Timer);
+    ApiMongo.data = tasks;
+
+    if (ApiMongo.toUpdate.length > 0 && ApiMongo.toDelete.length > 0) {
+      ApiMongo.Timer = setTimeout(() => {
+        this.Update(ApiMongo.toUpdate);
+        this.Delete(ApiMongo.toDelete);
       }, 1000);
-    } else if (API.toUpdate.length > 0)
-      API.Timer = setTimeout(() => {
-        this.Update(API.toUpdate);
+    } else if (ApiMongo.toUpdate.length > 0)
+      ApiMongo.Timer = setTimeout(() => {
+        this.Update(ApiMongo.toUpdate);
       }, 1000);
-    else if (API.toDelete.length > 0) {
-      API.Timer = setTimeout(() => {
-        this.Delete(API.toDelete);
+    else if (ApiMongo.toDelete.length > 0) {
+      ApiMongo.Timer = setTimeout(() => {
+        this.Delete(ApiMongo.toDelete);
       }, 1000);
     }
   }
-  addToUpdateList(id: string) {
-    API.toUpdate.includes(id) ? null : API.toUpdate.push(id);
+  static addToUpdateList(id: string) {
+    ApiMongo.toUpdate.includes(id) ? null : ApiMongo.toUpdate.push(id);
   }
-  addToDeleteList(id: string) {
-    API.toDelete.includes(id) ? null : API.toDelete.push(id);
+  static addToDeleteList(id: string) {
+    ApiMongo.toDelete.includes(id) ? null : ApiMongo.toDelete.push(id);
   }
-  async fetchAndSet(setter: Function, URI: string, navigator: Function) {
-    if (!API.fetching) {
-      API.fetching = true;
+  static async fetchAndSet(setter: Function, URI: string, navigator: Function) {
+    if (!ApiMongo.fetching) {
+      ApiMongo.fetching = true;
 
       try {
         let response = await fetch(URI, {
@@ -52,23 +56,25 @@ export default class API {
             setter(val);
           }
 
-          API.fetching = false;
+          ApiMongo.fetching = false;
         } else {
-          API.fetching = false;
-
-          console.log("fetchAndSet succeded but not with OK status");
-
+          ApiMongo.fetching = false;
+          ApiMongo.showWarning(
+            "fetchAndSet succeded but not with an OK status"
+          );
           throw new Error("Got status " + response.status);
         }
       } catch (err) {
-        setter([{ id: 0, task: `${err}. Please try again`, status: false }]);
+        setter([
+          { id: 0, task: `${err}. Please try again later`, status: false },
+        ]);
       }
     }
   }
 
-  private async Update(list: Array<string>) {
+  private static async Update(list: Array<string>) {
     // Updates and Adds tasks that yet not exist.
-    let dataToSend: Array<Task> = API.data.filter((el: Task) =>
+    let dataToSend: Array<Task> = ApiMongo.data.filter((el: Task) =>
       list.includes(el._id)
     );
 
@@ -80,14 +86,14 @@ export default class API {
         headers: { "Content-Type": "application/json;charset=UTF-8" },
         body: JSON.stringify(dataToSend),
       })
-        .then(() => (API.toUpdate = []))
+        .then(() => (ApiMongo.toUpdate = []))
         .then(() => console.log("Sent Updates to Server"))
         .catch((err) => {
-          console.log("Error while updating. ", err);
+          ApiMongo.showWarning(`"Error while updating tasks. ${err}`);
         });
     }
   }
-  private async Delete(list: Array<string>) {
+  private static async Delete(list: Array<string>) {
     if (list.length > 0) {
       let response = await fetch("http://localhost:5000/api/delete", {
         method: "DELETE",
@@ -97,15 +103,17 @@ export default class API {
         body: JSON.stringify(list),
       })
         .then(() => {
-          API.toDelete = [];
+          ApiMongo.toDelete = [];
           console.log("Sent Delete ids to server");
         })
-        .catch((err) => console.log("Error while deleting. ", err));
+        .catch((err) => {
+          ApiMongo.showWarning(`Error while deleting. ${err}`);
+        });
     } else {
       console.log("Nothing to delete");
     }
   }
-  async saveToCloud(setter: Function) {
+  static async saveToCloud(setter: Function) {
     // Causes to save tasks to MongoDB cloud.
     // Causes tasks to be refetched
     let response = await fetch("http://localhost:5000/api/updateCloud", {
@@ -119,12 +127,11 @@ export default class API {
 
       setter(tasks);
     } else {
-      console.log("saveToCloud succeded but not with OK status");
-
+      ApiMongo.showWarning("Syncing cloud succeded but not with an OK status");
       throw new Error("Got status " + response.status);
     }
   }
-  async setOwnTaskList(content: string, setter: Function) {
+  static async setOwnTaskList(content: string, setter: Function) {
     let response = await fetch("http://localhost:5000/api/setOwnTaskList", {
       method: "POST",
       mode: "cors",
@@ -134,8 +141,24 @@ export default class API {
     });
     if (response.ok) {
       let val = await response.json();
-
       setter(val);
+    } else {
+      ApiMongo.showWarning(
+        "Upload from file succeded but not with an OK status"
+      );
     }
+  }
+
+  static async setWarning(
+    setErrorTextFn: Function,
+    setWarningVisibleFn: Function
+  ) {
+    ApiMongo.setErrorText = setErrorTextFn;
+    ApiMongo.setWarningVisible = setWarningVisibleFn;
+  }
+  private static showWarning(errorTxt: string) {
+    ApiMongo.setErrorText(errorTxt);
+    ApiMongo.setWarningVisible(true);
+    console.log(errorTxt);
   }
 }

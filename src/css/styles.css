@@ -135,7 +135,6 @@ footer {
   background-color: rgba(67, 255, 108, 0.35);
 }
 .todo-list-controls div:last-child button:hover {
-
   background-color: rgba(6, 95, 26, 0.35);
 }
 .round {
@@ -188,7 +187,8 @@ footer {
   opacity: 1;
 }
 
-.upload-dialog {
+.upload-dialog,
+.warning-dialog {
   padding: 2rem;
   height: 10rem;
   width: 30rem;
@@ -200,7 +200,16 @@ footer {
   border-radius: 0.5em;
   box-shadow: 2px 2px 6px rgb(0 0 0 / 10%);
 }
-.dialog-wrapper {
+
+.warning-dialog {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-content: center;
+}
+
+.dialog-wrapper,
+.warning-wrapper {
   z-index: 1;
   position: fixed;
   width: 100%;
@@ -235,17 +244,17 @@ footer {
 }
 
 .login-container {
-    width: 45%;
-    height: auto;
-    border-radius: 0.5em;
-    padding: 0.8em;
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-    align-items: center;
-    justify-content: space-around;
-    background-color: #ffffff;
-    box-shadow: 2px 3px 7px 2px rgb(0 0 0 / 9%);
+  width: 45%;
+  height: auto;
+  border-radius: 0.5em;
+  padding: 0.8em;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  justify-content: space-around;
+  background-color: #ffffff;
+  box-shadow: 2px 3px 7px 2px rgb(0 0 0 / 9%);
 }
 .login-form {
   display: flex;
