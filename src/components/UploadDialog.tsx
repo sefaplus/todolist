@@ -29,7 +29,7 @@ export default function UploadDialog({
     setFile(f);
   }
 
-  async function handleUpload(e: any) {
+  async function handleUpload() {
     if (!uploadStatus && file != null) {
       let f = file as File;
 
