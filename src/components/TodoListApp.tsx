@@ -15,7 +15,12 @@ export const enum Filter {
   ACTIVE = "ACTIVE",
   COMPLETED = "COMPLETED",
 }
-export type Task = { _id: string; status: boolean; task: string };
+export type Task = {
+  _id: string;
+  status: boolean;
+  task: string;
+  position: number;
+};
 
 export default function TodoListApp() {
   const parsedTodos = JSON.parse(localStorage.getItem("todos")!);
@@ -41,13 +46,21 @@ export default function TodoListApp() {
     let newId = JSON.stringify(Date.now());
 
     setLocalTasks((prevTasks: Array<Task>) => {
-      let newTask: Task = { _id: newId, task: todoName, status: false };
+      const position = prevTasks.length + 1;
+
+      let newTask: Task = {
+        _id: newId,
+        task: todoName,
+        status: false,
+        position: position,
+      };
       let newTasks: Array<Task> = [...prevTasks, newTask];
 
       return newTasks;
     });
 
     ApiMongo.addToUpdateList(newId);
+    console.log(localTasks);
   };
   const handleToggleAllTasks = () =>
     setLocalTasks((prevTasks: Array<Task>) =>

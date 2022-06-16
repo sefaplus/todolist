@@ -70,7 +70,7 @@ export default class ApiMongo {
     );
 
     if (dataToSend.length > 0) {
-      let response = await fetch("http://localhost:5000/api/update", {
+      await fetch("http://localhost:5000/api/update", {
         method: "PATCH",
         mode: "cors",
         credentials: "include",
@@ -104,7 +104,7 @@ export default class ApiMongo {
       console.log("Nothing to delete");
     }
   }
-  static async saveToCloud(setter: Function) {
+  static async saveToCloud() {
     // Causes to save tasks to MongoDB cloud.
     // Causes tasks to be refetched
     let response = await fetch("http://localhost:5000/api/updateCloud", {
