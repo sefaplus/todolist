@@ -23,6 +23,7 @@ export default function TodoItem({
   function handleTodoChange(e: BaseSyntheticEvent) {
     e.target.style.height = "inherit";
     e.target.style.height = `${e.target.scrollHeight}px`;
+
     onTodoChange({
       task: (e.target as HTMLInputElement).value,
     });
@@ -50,7 +51,7 @@ export default function TodoItem({
           type="checkbox"
           className="checkmark"
           value={`${status}`}
-          checked={status}
+          defaultChecked={status}
           onChange={handleTaskStatus}
           id={`${_id}`}
         />

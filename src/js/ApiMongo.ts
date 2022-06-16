@@ -10,11 +10,10 @@ export default class ApiMongo {
   static setErrorText: Function;
   static setWarningVisible: Function;
 
-  static fetcher = {
+  private static fetcher = {
+    // API Fetching preventor.
     setFetching: () => {
-      ApiMongo.currentlyFetching = new Promise(() =>
-        console.log("fetchResolved")
-      );
+      ApiMongo.currentlyFetching = new Promise(() => {});
     },
 
     resolveFetching: () => {
@@ -29,18 +28,21 @@ export default class ApiMongo {
 
   static setApiData(tasks: Array<Task>) {
     clearTimeout(ApiMongo.Timer);
-    ApiMongo.data = tasks;
 
-    if (ApiMongo.toUpdate.length > 0 && ApiMongo.toDelete.length > 0) {
+    ApiMongo.data = tasks;
+    const uLen = ApiMongo.toUpdate.length;
+    const dLen = ApiMongo.toDelete.length;
+
+    if (uLen && dLen) {
       ApiMongo.Timer = setTimeout(() => {
         this.Update(ApiMongo.toUpdate);
         this.Delete(ApiMongo.toDelete);
       }, 1000);
-    } else if (ApiMongo.toUpdate.length > 0) {
+    } else if (uLen) {
       ApiMongo.Timer = setTimeout(() => {
         this.Update(ApiMongo.toUpdate);
       }, 1000);
-    } else if (ApiMongo.toDelete.length > 0) {
+    } else if (dLen) {
       ApiMongo.Timer = setTimeout(() => {
         this.Delete(ApiMongo.toDelete);
       }, 1000);
@@ -68,7 +70,7 @@ export default class ApiMongo {
       if (response.ok) {
         let val = await response.json();
 
-        if (val.notLogged) {
+        if (val.logged == false) {
           ApiMongo.fetcher.resolveFetching();
           navigator("/");
         } else {
@@ -90,14 +92,15 @@ export default class ApiMongo {
   }
 
   private static async Update(list: Array<string>) {
+    // Updates and Adds tasks that yet not exist.
     await ApiMongo.fetcher.getFetcher();
     ApiMongo.fetcher.setFetching();
-    // Updates and Adds tasks that yet not exist.
+
     let dataToSend: Array<Task> = ApiMongo.data.filter((el: Task) =>
       list.includes(el._id)
     );
 
-    if (dataToSend.length > 0) {
+    if (dataToSend.length) {
       await fetch("http://localhost:5000/api/update", {
         method: "PATCH",
         mode: "cors",
@@ -116,11 +119,13 @@ export default class ApiMongo {
         });
     }
   }
+
   private static async Delete(list: Array<string>) {
-    if (list.length > 0) {
+    if (list.length) {
       await ApiMongo.fetcher.getFetcher();
       ApiMongo.fetcher.setFetching();
-      let response = await fetch("http://localhost:5000/api/delete", {
+
+      await fetch("http://localhost:5000/api/delete", {
         method: "DELETE",
         mode: "cors",
         credentials: "include",
@@ -140,30 +145,43 @@ export default class ApiMongo {
       console.log("Nothing to delete");
     }
   }
+
   static async saveToCloud() {
     await ApiMongo.fetcher.getFetcher();
     ApiMongo.fetcher.setFetching();
     // Causes to save tasks to MongoDB cloud.
     // Causes tasks to be refetched
-    let response = await fetch("http://localhost:5000/api/updateCloud", {
-      method: "PATCH",
-      mode: "cors",
-      credentials: "include",
-      headers: { "Content-Type": "application/json;charset=UTF-8" },
-    });
-    if (response.ok) {
-      let tasks = await response.json();
-      ApiMongo.fetcher.resolveFetching();
-      return tasks;
-    } else {
-      ApiMongo.showWarning("Syncing cloud succeded but not with an OK status");
-      ApiMongo.fetcher.resolveFetching();
-      throw new Error("Got status " + response.status);
+    try {
+      let response = await fetch("http://localhost:5000/api/updateCloud", {
+        method: "PATCH",
+        mode: "cors",
+        credentials: "include",
+        headers: { "Content-Type": "application/json;charset=UTF-8" },
+      });
+      if (response.ok) {
+        let tasks = await response.json();
+        ApiMongo.fetcher.resolveFetching();
+
+        return tasks;
+      } else {
+        ApiMongo.showWarning(
+          "Syncing cloud succeded but not with an OK status"
+        );
+        ApiMongo.fetcher.resolveFetching();
+
+        throw new Error("Got status " + response.status);
+      }
+    } catch (err) {
+      console.log(err);
+
+      ApiMongo.showWarning(err as any);
     }
   }
+
   static async setOwnTaskList(content: string, setter: Function) {
     await ApiMongo.fetcher.getFetcher();
     ApiMongo.fetcher.setFetching();
+
     try {
       let response = await fetch("http://localhost:5000/api/setOwnTaskList", {
         method: "POST",
@@ -193,6 +211,7 @@ export default class ApiMongo {
       ApiMongo.showWarning(`Erorr: ${err}`);
     }
   }
+
   static setWarning(setErrorTextFn: Function, setWarningVisibleFn: Function) {
     ApiMongo.setErrorText = setErrorTextFn;
     ApiMongo.setWarningVisible = setWarningVisibleFn;

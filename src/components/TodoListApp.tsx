@@ -33,8 +33,9 @@ export default function TodoListApp() {
   let [errorText, setErrorText] = useState("");
   useEffect(() => {
     console.log("Reload");
+
     ApiMongo.setWarning(setErrorText, setWarningVisible);
-    ApiLogin.checkLogin(navigator);
+
     ApiMongo.fetchAndSet(setLocalTasks, "http://localhost:5000/api", navigator);
   }, []);
 
@@ -168,6 +169,9 @@ export default function TodoListApp() {
               ApiSaveCloudFn={ApiMongo.saveToCloud}
             />
           </div>
+          <p>
+            <button onClick={() => ApiLogin.logout(navigator)}> Logout </button>
+          </p>
         </div>
       </footer>
     </>

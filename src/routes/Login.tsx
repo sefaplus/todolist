@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ApiLogin from "../js/ApiLogin";
 
@@ -34,7 +33,7 @@ export default function Login() {
             setLogin(e.target.value)
           }
         />
-        <label htmlFor="password"> LOGIN:</label>
+        <label htmlFor="password"> Password:</label>
         <input
           type="text"
           value={password}

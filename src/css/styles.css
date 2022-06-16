@@ -131,13 +131,7 @@ footer {
 .todo-list-controls div {
   margin-bottom: 1em;
 }
-.todo-list-controls div:last-child button {
-  background-color: rgba(67, 255, 108, 0.35);
-  border-radius: 0.5em;
-}
-.todo-list-controls div:last-child button:hover {
-  background-color: rgba(6, 95, 26, 0.35);
-}
+
 .round {
   position: relative;
   display: flex;
@@ -276,6 +270,11 @@ footer {
   flex-direction: column;
   flex-wrap: wrap;
 }
+.controls-server button:hover {
+  background-color: rgba(6, 95, 26, 0.35);
+}
 .controls-server button {
+  background-color: rgba(67, 255, 108, 0.35);
+  border-radius: 0.5em;
   margin-bottom: 0.5em;
 }
