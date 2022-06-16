@@ -1,6 +1,5 @@
 import { Task } from "../components/TodoListApp";
 export default class ApiMongo {
-  static fetching: boolean = false;
   static toUpdate: Array<string> = []; // Array of ids to update
   static toDelete: Array<string> = [];
   static Timer: ReturnType<typeof setTimeout>;
@@ -37,38 +36,30 @@ export default class ApiMongo {
     ApiMongo.toDelete.includes(id) ? null : ApiMongo.toDelete.push(id);
   }
   static async fetchAndSet(setter: Function, URI: string, navigator: Function) {
-    if (!ApiMongo.fetching) {
-      ApiMongo.fetching = true;
+    try {
+      let response = await fetch(URI, {
+        method: "GET",
+        mode: "cors",
+        credentials: "include",
+        headers: { "Content-Type": "application/json;charset=UTF-8" },
+      });
+      if (response.ok) {
+        let val = await response.json();
 
-      try {
-        let response = await fetch(URI, {
-          method: "GET",
-          mode: "cors",
-          credentials: "include",
-          headers: { "Content-Type": "application/json;charset=UTF-8" },
-        });
-        if (response.ok) {
-          let val = await response.json();
-
-          if (val.notLogged) {
-            navigator("/");
-          } else {
-            setter(val);
-          }
-
-          ApiMongo.fetching = false;
+        if (val.notLogged) {
+          navigator("/");
         } else {
-          ApiMongo.fetching = false;
-          ApiMongo.showWarning(
-            "fetchAndSet succeded but not with an OK status"
-          );
-          throw new Error("Got status " + response.status);
+          setter(val);
         }
-      } catch (err) {
-        setter([
-          { id: 0, task: `${err}. Please try again later`, status: false },
-        ]);
+      } else {
+        ApiMongo.showWarning("fetchAndSet succeded but not with an OK status");
+
+        throw new Error("Got status " + response.status);
       }
+    } catch (err) {
+      setter([
+        { id: 0, task: `${err}. Please try again later`, status: false },
+      ]);
     }
   }
 
@@ -125,38 +116,44 @@ export default class ApiMongo {
     if (response.ok) {
       let tasks = await response.json();
 
-      setter(tasks);
+      return tasks;
     } else {
       ApiMongo.showWarning("Syncing cloud succeded but not with an OK status");
       throw new Error("Got status " + response.status);
     }
   }
   static async setOwnTaskList(content: string, setter: Function) {
-    let response = await fetch("http://localhost:5000/api/setOwnTaskList", {
-      method: "POST",
-      mode: "cors",
-      credentials: "include",
-      headers: { "Content-Type": "application/json;charset=UTF-8" },
-      body: content,
-    });
-    if (response.ok) {
-      let val = await response.json();
-      setter(val);
-    } else {
-      ApiMongo.showWarning(
-        "Upload from file succeded but not with an OK status"
-      );
+    try {
+      let response = await fetch("http://localhost:5000/api/setOwnTaskList", {
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+        headers: { "Content-Type": "application/json;charset=UTF-8" },
+        body: content,
+      });
+      if (response.ok) {
+        let val = await response.json();
+        if (val.hasOwnProperty("errorMsg")) {
+          ApiMongo.showWarning(val.errorMsg);
+        } else {
+          setter(val);
+        }
+      } else {
+        ApiMongo.showWarning(
+          "Upload from file succeded but not with an OK status"
+        );
+      }
+    } catch (err) {
+      ApiMongo.showWarning(`Erorr: ${err}`);
     }
   }
 
-  static async setWarning(
-    setErrorTextFn: Function,
-    setWarningVisibleFn: Function
-  ) {
+  static setWarning(setErrorTextFn: Function, setWarningVisibleFn: Function) {
     ApiMongo.setErrorText = setErrorTextFn;
     ApiMongo.setWarningVisible = setWarningVisibleFn;
   }
-  private static showWarning(errorTxt: string) {
+
+  public static showWarning(errorTxt: string) {
     ApiMongo.setErrorText(errorTxt);
     ApiMongo.setWarningVisible(true);
     console.log(errorTxt);

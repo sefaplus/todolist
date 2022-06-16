@@ -5,9 +5,10 @@ import React from "react";
 import FilterButton from "./FilterButton";
 import ApiMongo from "../js/ApiMongo";
 import ApiLogin from "../js/ApiLogin";
-import UploadDialog from "./UploadTodoList";
-import { Link, useNavigate } from "react-router-dom";
+import UploadDialog from "./UploadDialog";
+import { useNavigate } from "react-router-dom";
 import WarningDialog from "./WarningDialog";
+import CloudSyncBtn from "./CloudSyncBtn";
 
 export const enum Filter {
   ALL = "ALL",
@@ -136,7 +137,7 @@ export default function TodoListApp() {
               Remove completed
             </button>
           </div>
-          <div>
+          <div className="controls-server">
             <button
               className="filter-button"
               onClick={() =>
@@ -148,13 +149,10 @@ export default function TodoListApp() {
             <button className="filter-button" onClick={handleDialogShow}>
               Upload todo list from File
             </button>
-            <button
-              className="filter-button"
-              onClick={() => ApiMongo.saveToCloud(setLocalTasks)}
-            >
-              SYNC
-            </button>
-            <Link to="/"> LOGIN </Link>
+            <CloudSyncBtn
+              setLocalTasks={setLocalTasks}
+              ApiSaveCloudFn={ApiMongo.saveToCloud}
+            />
           </div>
         </div>
       </footer>
