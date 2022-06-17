@@ -9,7 +9,10 @@ export default function WarningDialog({
   warningVisible: boolean;
   setWarningVisible: Function;
 }) {
-  useEffect(() => {}, [errorText, warningVisible]);
+  let [visible, setVisible] = useState(false);
+  useEffect(() => {
+    setVisible(true);
+  }, [errorText]);
   function hide(e: React.MouseEvent) {
     setWarningVisible(false);
   }

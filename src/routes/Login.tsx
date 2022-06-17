@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import ApiLogin from "../js/ApiLogin";
 
 export default function Login() {
@@ -15,14 +15,14 @@ export default function Login() {
     if (response.loggedIn) {
       navigate("/todolist");
     } else {
-      setLoggingStatus("LOGIN OR PASSWORD ARE INCORRECT");
+      setLoggingStatus(response.message);
     }
   }
 
   return (
     <main className="login-container">
       <h1>{loggingStatus}</h1>
-      <form className="login-form" onSubmit={handleSubmit}>
+      <form className="form" onSubmit={handleSubmit}>
         <label htmlFor="login"> LOGIN:</label>
         <input
           type="text"
@@ -43,9 +43,10 @@ export default function Login() {
             setPassword(e.target.value)
           }
         />
-        <button type="submit" value="SUBMIT">
+        <button type="button" onClick={handleSubmit}>
           Login
         </button>
+        <button onClick={() => navigate("/signup")}> Sign up</button>
       </form>
     </main>
   );
