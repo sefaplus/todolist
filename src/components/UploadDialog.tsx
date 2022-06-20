@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ApiMongo from "../js/ApiMongo";
+import ApiMongo from "../ts/ApiMongo";
 export default function UploadDialog({
   visible,
   setDialogVisible,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import ApiLogin from "../js/ApiLogin";
+import ApiLogin from "../ts/ApiLogin";
 
 export default function Login() {
   let navigate = useNavigate();

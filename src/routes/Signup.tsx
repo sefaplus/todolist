@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import WarningDialog from "../components/WarningDialog";
-import ApiSignup from "../js/ApiSignUp";
+import ApiSignup from "../ts/ApiSignUp";
 
 export default function Signup() {
   let navigate = useNavigate();
