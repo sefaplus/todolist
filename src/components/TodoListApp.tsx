@@ -61,22 +61,21 @@ export default function TodoListApp() {
     });
 
     ApiMongo.addToUpdateList(newId);
-    console.log(localTasks);
   };
+
   const handleToggleAllTasks = () =>
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.map((todo) => {
         ApiMongo.addToUpdateList(todo._id);
-
         return { ...todo, status: true };
       })
     );
 
   const handleTodoChange = (id: string) => (updatedTodo: Task) => {
     setLocalTasks((prevTasks: Array<Task>) => {
-      return prevTasks.map((todo) => {
-        return todo._id === id ? { ...todo, ...updatedTodo } : todo;
-      });
+      return prevTasks.map((todo) =>
+        todo._id === id ? { ...todo, ...updatedTodo } : todo
+      );
     });
     ApiMongo.addToUpdateList(id);
   };
@@ -88,7 +87,7 @@ export default function TodoListApp() {
     ApiMongo.addToDeleteList(id);
   };
 
-  const handleDeleteCompleted = () => {
+  const handleDeleteCompleted = () =>
     setLocalTasks((prevTasks: Array<Task>) =>
       prevTasks.filter((todo) => {
         todo.status ? ApiMongo.addToDeleteList(todo._id) : null;
@@ -96,11 +95,9 @@ export default function TodoListApp() {
         return !todo.status;
       })
     );
-  };
 
-  const handleDialogShow = () => {
-    setDialogVisible(true);
-  };
+  const handleDialogShow = () => setDialogVisible(true);
+
   return (
     <>
       <WarningDialog
@@ -118,14 +115,12 @@ export default function TodoListApp() {
         onClick={handleTodoAdd}
         onClickAllTask={handleToggleAllTasks}
       />
-      <ul>
-        <TaskList
-          tasks={localTasks}
-          filter={filter}
-          onTodoChange={handleTodoChange}
-          onTodoDelete={handleTodoDelete}
-        />
-      </ul>
+      <TaskList
+        tasks={localTasks}
+        filter={filter}
+        onTodoChange={handleTodoChange}
+        onTodoDelete={handleTodoDelete}
+      />
       <footer>
         <div className="todo-list-controls">
           <p> Current tasks: {localTasks.length} </p>

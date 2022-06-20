@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import TodoItem from "./TodoItem";
 import React from "react";
 import { Filter, Task } from "./TodoListApp";
-import { getNextKeyDef } from "@testing-library/user-event/dist/keyboard/getNextKeyDef";
 export default function TaskList({
   tasks,
   filter,
@@ -16,7 +15,7 @@ export default function TaskList({
 }) {
   useEffect(() => {}, [filter]);
   return (
-    <>
+    <ul>
       {tasks
         .filter((todo: Task) => {
           return (
@@ -37,6 +36,6 @@ export default function TaskList({
             />
           );
         })}
-    </>
+    </ul>
   );
 }

@@ -1,5 +1,6 @@
 import React, { BaseSyntheticEvent, useEffect } from "react";
 import { Task } from "./TodoListApp";
+let counter = 0;
 export default function TodoItem({
   value,
   onTodoChange,
@@ -10,10 +11,12 @@ export default function TodoItem({
   onTodoDelete: Function;
 }) {
   const { _id, task, status } = value;
+
   useEffect(() => {
     let textarea = document.getElementById(`${_id}text`) as HTMLTextAreaElement;
     textarea.style.height = `${textarea.scrollHeight}px`;
   }, []);
+
   function handleTaskStatus(e: BaseSyntheticEvent) {
     onTodoChange({
       status: (e.target as HTMLInputElement).checked,
@@ -50,8 +53,7 @@ export default function TodoItem({
         <input
           type="checkbox"
           className="checkmark"
-          value={`${status}`}
-          defaultChecked={status}
+          checked={status}
           onChange={handleTaskStatus}
           id={`${_id}`}
         />
