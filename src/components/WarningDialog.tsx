@@ -9,23 +9,17 @@ export default function WarningDialog({
   warningVisible: boolean;
   setWarningVisible: Function;
 }) {
-  let [visible, setVisible] = useState(false);
-  useEffect(() => {
-    setVisible(true);
-  }, [errorText]);
   function hide(e: React.MouseEvent) {
     setWarningVisible(false);
   }
-  if (warningVisible) {
-    return (
-      <div className="warning-wrapper">
-        <div className="warning-dialog">
-          <p> {errorText} </p>
-          <button onClick={hide}> OK </button>
-        </div>
+  return warningVisible ? (
+    <div className="warning-wrapper">
+      <div className="warning-dialog">
+        <p> {errorText} </p>
+        <button onClick={hide}> OK </button>
       </div>
-    );
-  } else {
-    return <></>;
-  }
+    </div>
+  ) : (
+    <></>
+  );
 }

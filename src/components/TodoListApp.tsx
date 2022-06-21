@@ -9,6 +9,7 @@ import UploadDialog from "./UploadDialog";
 import { useNavigate } from "react-router-dom";
 import WarningDialog from "./WarningDialog";
 import CloudSyncBtn from "./CloudSyncBtn";
+import TaskCounter from "./TaskCounter";
 
 export const enum Filter {
   ALL = "ALL",
@@ -31,6 +32,7 @@ export default function TodoListApp() {
 
   let [warningVisible, setWarningVisible] = useState(false);
   let [errorText, setErrorText] = useState("");
+
   useEffect(() => {
     console.log("Reload");
 
@@ -123,7 +125,7 @@ export default function TodoListApp() {
       />
       <footer>
         <div className="todo-list-controls">
-          <p> Current tasks: {localTasks.length} </p>
+          <TaskCounter localTasks={localTasks} filter={filter} />
           <div>
             <FilterButton
               text="All"

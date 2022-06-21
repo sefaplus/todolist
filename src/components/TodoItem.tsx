@@ -13,22 +13,27 @@ export default function TodoItem({
   const { _id, task, status } = value;
 
   useEffect(() => {
-    let textarea = document.getElementById(`${_id}text`) as HTMLTextAreaElement;
+    // Setting textarea height of its scroll height (makes multiline)
+    const textarea = document.getElementById(
+      `textarea-${_id}`
+    ) as HTMLTextAreaElement;
+
     textarea.style.height = `${textarea.scrollHeight}px`;
   }, []);
 
-  function handleTaskStatus(e: BaseSyntheticEvent) {
+  function handleTaskStatus(e: React.ChangeEvent) {
     onTodoChange({
       status: (e.target as HTMLInputElement).checked,
     });
   }
 
-  function handleTodoChange(e: BaseSyntheticEvent) {
-    e.target.style.height = "inherit";
-    e.target.style.height = `${e.target.scrollHeight}px`;
+  function handleTodoChange(e: React.ChangeEvent) {
+    const target = e.target as HTMLTextAreaElement;
+    target.style.height = "inherit";
+    target.style.height = `${e.target.scrollHeight}px`;
 
     onTodoChange({
-      task: (e.target as HTMLInputElement).value,
+      task: target.value,
     });
   }
 
@@ -37,37 +42,43 @@ export default function TodoItem({
   }
 
   function handleDblClick(e: React.MouseEvent) {
-    let target = e.target as HTMLInputElement;
+    const target = e.target as HTMLTextAreaElement;
     target.readOnly = false;
   }
 
   function handleKeypress(e: React.KeyboardEvent) {
     if (e.key == "Enter") {
-      let target = e.target as HTMLInputElement;
+      const target = e.target as HTMLTextAreaElement;
       target.readOnly = true;
     }
   }
+
+  function handleBlur(e: React.FocusEvent) {
+    const target = e.target as HTMLTextAreaElement;
+    target.readOnly = true;
+  }
+
   return (
     <li>
       <div className="round">
         <input
           type="checkbox"
+          id={`${_id}`}
           className="checkmark"
           checked={status}
           onChange={handleTaskStatus}
-          id={`${_id}`}
         />
         <label htmlFor={`${_id}`}></label>
       </div>
       <textarea
-        onChange={handleTodoChange}
+        id={`textarea-${_id}`}
         className="todolist-task"
         value={task}
         readOnly={true}
-        onBlur={(e) => (e.target.readOnly = true)}
+        onBlur={handleBlur}
         onKeyDown={handleKeypress}
         onDoubleClick={handleDblClick}
-        id={`${_id}text`}
+        onChange={handleTodoChange}
       />
       <button className="button-rounded" value={_id} onClick={handleTodoDelete}>
         X

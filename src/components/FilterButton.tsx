@@ -11,10 +11,7 @@ export default function FilterButton({
   setFilter: Function;
   selected?: boolean;
 }) {
-
-  const handleClick = () => {
-    setFilter(filterOption);
-  }
+  const handleClick = () => setFilter(filterOption);
 
   return (
     <button

@@ -43,8 +43,6 @@ export default function Signup() {
     }
   }
 
-  function signup(name: string, login: string, password: string) {}
-
   return (
     <>
       <WarningDialog
