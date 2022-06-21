@@ -12,7 +12,7 @@ export default class ApiLogin {
       console.log("Error during login. ", err);
     }
     if (response.ok) {
-      let val = await response.json();
+      const val = await response.json();
 
       return val;
     }
