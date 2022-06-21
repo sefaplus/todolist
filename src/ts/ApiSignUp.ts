@@ -63,7 +63,7 @@ export default class ApiSignup {
       confirmPassword: confirmPassword,
     };
     const response = await fetch("http://localhost:5000/api/registration", {
-      method: "PUT",
+      method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json;charset=UTF-8" },
       body: JSON.stringify(body),

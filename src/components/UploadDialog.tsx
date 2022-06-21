@@ -17,51 +17,43 @@ export default function UploadDialog({
   useEffect(() => {}, [visible, uploadStatus]);
 
   function handleDialogHide() {
-    console.log("hide");
     if (!uploadStatus) {
       setDialogVisible(false);
     }
   }
 
   function handleChange(e: any) {
-    let f = e.target.files[0];
-
-    setFile(f);
+    setFile(e.target.files[0]);
   }
 
   async function handleUpload() {
-    if (!uploadStatus && file != null) {
+    if (!uploadStatus && file) {
       let f = file as File;
+      await setOwnTaskList(await f.text(), setLocalTasks, setUploadStatus);
 
-      setUploadStatus(true);
-      await setOwnTaskList(await f.text(), setLocalTasks);
-      setUploadStatus(false);
-
-      handleDialogHide();
-    } else if (!uploadStatus && file == null) {
-      ApiMongo.showWarning("Please set File");
+      return handleDialogHide();
     }
+
+    ApiMongo.showWarning("Please set File");
   }
 
-  if (visible) {
-    return (
-      <div className="dialog-wrapper">
-        <div className="upload-dialog">
-          <div className="upload-head">
-            <p> Please upload your compatible todolist file.</p>
-            <button onClick={handleDialogHide}> X </button>
-          </div>
-          <div className="upload-box">
-            <input type="file" onChange={handleChange} accept=".tl"></input>
-            <p> Note: this will remove all existing tasks!</p>
-            <button type="submit" onClick={handleUpload}>
-              {uploadStatus ? "UPLOADING.." : "UPLOAD"}
-            </button>
-          </div>
+  return visible ? (
+    <div className="dialog-wrapper">
+      <div className="upload-dialog">
+        <div className="upload-head">
+          <p> Please upload your compatible todolist file.</p>
+          <button onClick={handleDialogHide}> X </button>
+        </div>
+        <div className="upload-box">
+          <input type="file" onChange={handleChange} accept=".tl"></input>
+          <p> Note: this will remove all existing tasks!</p>
+          <button type="submit" onClick={handleUpload}>
+            {uploadStatus ? "UPLOADING.." : "UPLOAD"}
+          </button>
         </div>
       </div>
-    );
-  } else {
-    return <></>;
-  }
+    </div>
+  ) : (
+    <></>
+  );
 }

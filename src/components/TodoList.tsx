@@ -17,25 +17,22 @@ export default function TaskList({
   return (
     <ul>
       {tasks
-        .filter((todo: Task) => {
-          return (
+        .filter(
+          (todo: Task) =>
             todo != null && // incase todo val is undefined
             (filter === Filter.ALL ||
               (todo.status
                 ? filter === Filter.COMPLETED
                 : filter === Filter.ACTIVE))
-          );
-        })
-        .map((todo: Task) => {
-          return (
-            <TodoItem
-              value={todo}
-              onTodoChange={onTodoChange(todo._id)}
-              onTodoDelete={onTodoDelete(todo._id)}
-              key={todo._id}
-            />
-          );
-        })}
+        )
+        .map((todo: Task) => (
+          <TodoItem
+            value={todo}
+            onTodoChange={onTodoChange(todo._id)}
+            onTodoDelete={onTodoDelete(todo._id)}
+            key={todo._id}
+          />
+        ))}
     </ul>
   );
 }

@@ -102,7 +102,7 @@ export default class ApiMongo {
 
     if (dataToSend.length) {
       await fetch("http://localhost:5000/api/update", {
-        method: "PATCH",
+        method: "PUT",
         mode: "cors",
         credentials: "include",
         headers: { "Content-Type": "application/json;charset=UTF-8" },
@@ -153,7 +153,7 @@ export default class ApiMongo {
     // Causes tasks to be refetched
     try {
       let response = await fetch("http://localhost:5000/api/updateCloud", {
-        method: "PATCH",
+        method: "PUT",
         mode: "cors",
         credentials: "include",
         headers: { "Content-Type": "application/json;charset=UTF-8" },
@@ -178,10 +178,14 @@ export default class ApiMongo {
     }
   }
 
-  static async setOwnTaskList(content: string, setter: Function) {
+  static async setOwnTaskList(
+    content: string,
+    setter: Function,
+    setUploadingStatus: Function
+  ) {
     await ApiMongo.fetcher.getFetcher();
     ApiMongo.fetcher.setFetching();
-
+    setUploadingStatus(true);
     try {
       let response = await fetch("http://localhost:5000/api/setOwnTaskList", {
         method: "POST",
@@ -192,11 +196,12 @@ export default class ApiMongo {
       });
       if (response.ok) {
         let val = await response.json();
-        if (val.hasOwnProperty("errorMsg")) {
+        if (val.hasOwnProperty("error")) {
           ApiMongo.fetcher.resolveFetching();
 
           ApiMongo.showWarning(val.errorMsg);
         } else {
+          console.log(val);
           setter(val);
           ApiMongo.fetcher.resolveFetching();
         }
@@ -209,6 +214,8 @@ export default class ApiMongo {
     } catch (err) {
       ApiMongo.fetcher.resolveFetching();
       ApiMongo.showWarning(`Erorr: ${err}`);
+    } finally {
+      setUploadingStatus(false);
     }
   }
 

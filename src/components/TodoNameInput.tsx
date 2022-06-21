@@ -10,9 +10,7 @@ export default function TodoNameInput({
   let [addTaskText, setAddTaskText] = useState("");
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key == "Enter") {
-      handleAddTask();
-    }
+    if (e.key == "Enter") handleAddTask();
   };
 
   const handleAddTask = () => {
@@ -33,9 +31,7 @@ export default function TodoNameInput({
 
   return (
     <div className="todo-name-input">
-      <button
-        onClick={handleAllTaskComplete}
-      >\/</button>
+      <button onClick={handleAllTaskComplete}>▼</button>
       <input
         id="add-task"
         placeholder="What needs to be done?"
