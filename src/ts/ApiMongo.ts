@@ -102,7 +102,7 @@ export default class ApiMongo {
 
     if (dataToSend.length) {
       await fetch("http://localhost:5000/api/update", {
-        method: "PATCH",
+        method: "PUT",
         mode: "cors",
         credentials: "include",
         headers: { "Content-Type": "application/json;charset=UTF-8" },
@@ -153,7 +153,7 @@ export default class ApiMongo {
     // Causes tasks to be refetched
     try {
       let response = await fetch("http://localhost:5000/api/updateCloud", {
-        method: "PATCH",
+        method: "PUT",
         mode: "cors",
         credentials: "include",
         headers: { "Content-Type": "application/json;charset=UTF-8" },
