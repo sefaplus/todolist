@@ -48,6 +48,7 @@ export default class ApiLogin {
         credentials: "include",
         headers: { "Content-Type": "application/json;charset=UTF-8" },
       });
+      
       if (response.ok) {
         let json = await response.json();
 
